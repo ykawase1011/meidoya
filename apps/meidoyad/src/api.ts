@@ -173,7 +173,7 @@ function taskListSummary(view: TaskListView, count: number): string {
 }
 
 function taskLine(task: ListedTask): string {
-  return `${TASK_STATUS_LABELS[task.status]} — ${task.title} (\`${task.taskId}\`)`;
+  return `${TASK_STATUS_LABELS[task.status]} — ${task.title}`;
 }
 
 function taskSections(tasks: ListedTask[]): Array<{ title: string; bullets: string[] }> {
@@ -882,16 +882,23 @@ export class ControlPlaneService {
       case "task.get": {
         const task = this.getTask(scope, { taskId: command.taskId });
         return {
-          summary: `${task.taskId} is ${task.status}.`,
-          bullets: [`${task.pipeline}  ${task.title}`, task.intentSummary],
+          title: task.title,
+          summary: `${TASK_STATUS_LABELS[task.status]}です。`,
+          bullets: [task.intentSummary],
         };
       }
       case "task.cancel": {
+        const task = this.getTask(scope, { taskId: command.taskId });
         const result = await this.cancelTask(scope, {
           taskId: command.taskId,
           reason: "Cancelled by natural-language administrative request",
         });
-        return { summary: `${command.taskId} is ${result.status}.` };
+        return {
+          summary:
+            result.status === "cancelled"
+              ? `タスク「${task.title}」をキャンセルしました。`
+              : `タスク「${task.title}」は${TASK_STATUS_LABELS[result.status]}です。`,
+        };
       }
       case "schedule.list": {
         const result = this.listSchedules(scope, { includeDisabled: true });
@@ -952,7 +959,7 @@ export class ControlPlaneService {
     activeTaskCount: number;
     waitingTaskCount: number;
     enabledScheduleCount: number;
-    openTasks: Array<{ title: string; status: TaskStatus }>;
+    openTasks: Array<{ taskId: string; title: string; status: TaskStatus }>;
   } {
     const tasks = this.#repo
       .listTasks(input.workspaceId, {
@@ -968,7 +975,11 @@ export class ControlPlaneService {
       enabledScheduleCount: this.#scheduleRows(input.workspaceId).filter(
         (schedule) => schedule.enabled,
       ).length,
-      openTasks: tasks.slice(0, 5).map((task) => ({ title: task.title, status: task.status })),
+      openTasks: tasks.slice(0, 5).map((task) => ({
+        taskId: task.id,
+        title: task.title,
+        status: task.status,
+      })),
     };
   }
 

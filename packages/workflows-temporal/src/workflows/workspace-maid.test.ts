@@ -179,6 +179,53 @@ describe("WorkspaceMaidWorkflow", () => {
     expect(finalizations).toEqual(["completed"]);
   }, 120_000);
 
+  it("presents a task list as a reply rather than a completed task", async () => {
+    if (!env) throw new Error("no test environment");
+    const workflowsPath = fileURLToPath(new URL("./index.ts", import.meta.url));
+    const presentations: Array<string | undefined> = [];
+    const worker = await Worker.create({
+      connection: env.nativeConnection,
+      taskQueue: CONTROL_TASK_QUEUE,
+      workflowsPath,
+      activities: {
+        async loadWorkspacePolicy() {
+          return { policy, revision: 1 };
+        },
+        async assessRequest() {
+          return { type: "administrative", command: { kind: "task.list", view: "open" } };
+        },
+        async executeAdministrativeCommand() {
+          return {
+            title: "進行中のタスク",
+            summary: "進行中のタスクは1件です。",
+            bullets: ["⚙️ 実行中 — README確認"],
+          };
+        },
+        async finalizeIntakeRequest(input) {
+          presentations.push(input.presentation);
+        },
+      } satisfies Partial<Activities>,
+    });
+
+    await worker.runUntil(
+      env.client.workflow.execute(RequestWorkflow, {
+        taskQueue: CONTROL_TASK_QUEUE,
+        workflowId: "request-human-task-list",
+        args: [
+          {
+            environmentId: "home",
+            workspaceId: "work-it",
+            requestKey: "human-task-list",
+            origin: "chat",
+            messageRef: "msg:task-list",
+          },
+        ],
+      }),
+    );
+
+    expect(presentations).toEqual(["reply"]);
+  }, 120_000);
+
   it("finalizes a direct Maid response without starting a task workflow", async () => {
     if (!env) throw new Error("no test environment");
     const workflowsPath = fileURLToPath(new URL("./index.ts", import.meta.url));

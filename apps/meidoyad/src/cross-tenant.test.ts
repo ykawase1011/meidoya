@@ -162,6 +162,7 @@ describe("task.list and workspace.status.read", () => {
     expect(open.summary).toContain("1件");
     expect(JSON.stringify(open.sections)).toContain("⚙️ 実行中");
     expect(JSON.stringify(open)).toContain("Parser implementation");
+    expect(JSON.stringify(open)).not.toContain(running.taskId);
     expect(JSON.stringify(open)).not.toContain("Old completed work");
     expect(JSON.stringify(open)).not.toContain("今進行中のタスクは？");
     expect(JSON.stringify(open)).not.toContain("confidential");
@@ -200,6 +201,9 @@ describe("task.list and workspace.status.read", () => {
       "Parser implementation",
       "README approval",
     ]);
+    expect(context.openTasks.map((task) => task.taskId).sort()).toEqual(
+      [running.taskId, waiting.taskId].sort(),
+    );
     expect(JSON.stringify(context)).not.toContain("こんにちは");
     expect(JSON.stringify(context)).not.toContain("confidential");
   });

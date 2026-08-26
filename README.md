@@ -146,6 +146,8 @@ user's desired outcome, uses a trusted snapshot of active/waiting tasks and
 schedules, chooses the smallest useful action, and writes actionable Japanese
 handoffs. Direct conversational replies are one consequence, not a greetings-only
 special case.
+User-facing task lists and notifications use task names and statuses; internal
+task ids remain control-plane handles and are not shown in ordinary chat replies.
 The vendor binaries default to `codex` and `claude` on `PATH`; override them with
 `MEIDOYA_CODEX_BIN` or `MEIDOYA_CLAUDE_BIN`. Coordinating runs are bounded to 14
 minutes by default; set `MEIDOYA_CONTROL_AGENT_TIMEOUT_MS` to a positive integer

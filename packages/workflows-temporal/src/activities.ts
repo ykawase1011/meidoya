@@ -83,7 +83,7 @@ export type MaidWorkspaceContext = {
   activeTaskCount: number;
   waitingTaskCount: number;
   enabledScheduleCount: number;
-  openTasks: Array<{ title: string; status: TaskStatus }>;
+  openTasks: Array<{ taskId: TaskId; title: string; status: TaskStatus }>;
 };
 
 export type PlanTaskInput = {
@@ -886,6 +886,10 @@ export function createActivities(deps: ActivityDependencies): Activities {
     },
 
     async completeTask(input) {
+      const task = await deps.repository.loadTask(input.taskId);
+      if (task === undefined || task.workspaceId !== input.workspaceId) {
+        throw new Error(`unknown task ${input.taskId}`);
+      }
       const stored = await deps.repository.listArtifacts(input.taskId);
       const steps = await deps.repository.listSteps(input.taskId);
       const result = await completeTaskInEngine({
@@ -914,6 +918,7 @@ export function createActivities(deps: ActivityDependencies): Activities {
           // and `payload.taskId` is not persisted), and EVERY `TaskCompleted`
           // dead-letters — the one message the quiet-UX design exists to send.
           payload: {
+            title: `タスク「${task.title}」が完了しました`,
             summary: input.summary,
             ...(input.conversationId === undefined
               ? {}
