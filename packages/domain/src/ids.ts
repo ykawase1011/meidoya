@@ -1,0 +1,12 @@
+export type EnvironmentId = string;
+export type WorkspaceId = string;
+export type ProjectId = string;
+export type ConversationId = string;
+export type TaskId = string;
+export type StepId = string;
+export type CheckpointId = string;
+export type AgentRunId = string;
+export type ArtifactId = string;
+export type ScheduleId = string;
+export type ExecutionNodeId = string;
+export type ScopeToken = string;

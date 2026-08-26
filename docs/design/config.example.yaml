@@ -1,0 +1,273 @@
+schema_version: 1
+
+environment:
+  id: personal
+  timezone: Asia/Tokyo
+  data_dir: ~/.local/share/meidoya
+
+control_plane:
+  listen:
+    unix_socket: ~/.local/share/meidoya/meidoya.sock
+  sqlite:
+    path: ~/.local/share/meidoya/meidoya.sqlite
+  temporal:
+    address: 127.0.0.1:7233
+    namespace: default
+    control_task_queue: meidoya/control
+
+head_maid:
+  enabled: true
+  runtime:
+    provider: codex
+    model_profile: high
+  grants:
+    work-grammarxiv:
+      - status.read
+      - task.delegate
+      - task-summary.read
+    work-it:
+      - status.read
+      - task.delegate
+      - task-summary.read
+
+workspaces:
+  head-maid:
+    kind: coordination
+    ingress:
+      cli:
+        profile: global
+    # MEIDOYA_PROFILE=global meidoya submit "..." \
+    #   --target work-grammarxiv --target work-it
+    request_policy:
+      default_pipeline: cross-workspace
+
+  work-grammarxiv:
+    maid:
+      runtime:
+        provider: codex
+        model_profile: high
+
+    ingress:
+      slack:
+        account: personal
+        channel: C_GRAMMARXIV
+      cli:
+        profile: work-grammarxiv
+
+    projects:
+      grammarxiv:
+        workspace_ref: grammarxiv
+
+    request_policy:
+      quick_soft_deadline: 20s
+      default_pipeline: coding
+
+    human_gates:
+      clarification: when-needed
+      plan: always
+      review: before-complete
+      side_effect: policy
+
+    # 06 section 2: a floor `human_gates` above cannot relax, whatever a task
+    # override or a plan asks for. Empty means no floor beyond the defaults.
+    security_policy:
+      mandatory_gates:
+        side_effect: always
+
+    # 10 section 2: the operator's allowlist of verification commands a plan
+    # may select by name. A plan carries a gate NAME and nothing else; this
+    # block is the only place an argv is written on the control-plane side.
+    #
+    # THIS BLOCK MUST AGREE, TOKEN FOR TOKEN, WITH THE `quality_gates:` LIST IN
+    # docs/design/node.example.yaml ON EVERY NODE THAT SERVES THIS WORKSPACE.
+    # The control plane owns the catalog, but it does NOT get to decide what
+    # runs on a node: a verification activity arrives carrying this catalog,
+    # and the node independently justifies each selected entry against its own
+    # allowlist (`justifyQualityGate`) — name AND argv, token for token —
+    # before anything is spawned. An argv it cannot match is refused with a
+    # PolicyViolation and no process starts. So writing `npm test` here while
+    # the node lists `/usr/local/bin/vitest run --reporter=dot` is not a
+    # near-miss that degrades to something: it is 100% refusal of every
+    # verification. The two lists below are the same three argvs as the ones in
+    # node.example.yaml, deliberately, and `shipped-examples.test.ts` fails if
+    # anyone changes one file without the other.
+    #
+    # Only the gates a plan SELECTS have to be justified, so a node may host a
+    # SUBSET of this catalog (a node without a Rust toolchain need not list a
+    # `cargo` gate) — but for the gates it does list, the match is exact, and a
+    # plan that selects a gate the node does not host is refused, naming it.
+    #
+    # There is NO fallback. An omitted or empty block leaves this workspace
+    # with no catalog at all, and a task that reaches verification PAUSES with
+    # `no-quality-gate-catalog` rather than running a built-in default — the
+    # built-in default is `npm test`, i.e. whatever the checkout's package.json
+    # says, which is exactly what a node refuses structurally anyway.
+    #
+    # Absolute paths, because a node refuses an `argv[0]` its PATH would
+    # resolve — AND paths that exist on every node serving this workspace,
+    # because the node now stats `argv[0]` at startup and refuses to start
+    # otherwise. This block used to say `/usr/local/bin/vitest`, which exists
+    # on no stock machine: the pairing parsed, agreed and failed every gate
+    # with exit 71 and no path in the message.
+    #
+    # `/usr/bin/make` is what ships here for that reason: same absolute path on
+    # every machine, so the examples run as written. Swap in your toolchain's
+    # real binaries (`command -v vitest` on the node) and change
+    # docs/design/node.example.yaml in the same commit — `shipped-examples.test.ts`
+    # fails if the two files disagree by one token.
+    quality_gates:
+      commands:
+        - name: test
+          command: /usr/bin/make test
+        - name: lint
+          command: /usr/bin/make lint
+        - name: typecheck
+          command: /usr/bin/make typecheck
+
+    limits:
+      max_steps: 24
+      max_step_visits: 5
+      max_fix_rounds: 3
+      max_review_rounds: 3
+      max_no_progress_rounds: 2
+      max_parallel_workers: 3
+      max_model_escalations: 2
+      max_consecutive_failures: 3
+      max_wall_time: 4h
+
+    execution:
+      preferred_profile: lima-trusted
+      fallback_profiles:
+        - mac-restricted
+
+  work-it:
+    maid:
+      runtime:
+        provider: codex
+        model_profile: high
+    ingress:
+      discord:
+        account: personal
+        channel: "000000000000000000"
+    projects:
+      product-a:
+        workspace_ref: product-a
+      product-b:
+        workspace_ref: product-b
+      shared-library:
+        workspace_ref: shared-library
+
+# Every execution node must have an operator-owned policy here. A node whose id
+# is absent is refused at registration; its self-reported capabilities never
+# create authority. This entry matches docs/design/node.example.yaml.
+nodes:
+  mac-main:
+    profiles:
+      - mac-restricted
+      - lima-trusted
+    capabilities:
+      - repo.read
+      - repo.write
+      - shell
+      - network
+      - package-install
+      - external-side-effect
+    workspaces:
+      - work-grammarxiv
+      - work-it
+    max_concurrency: 4
+    heartbeat_interval: 15s
+
+models:
+  # When this block is present, meidoyad constructs both vendor runtimes for
+  # coordinating roles. The binaries default to `codex` and `claude` on PATH;
+  # MEIDOYA_CODEX_BIN / MEIDOYA_CLAUDE_BIN override them. Coordinating runs time
+  # out after 14 minutes unless MEIDOYA_CONTROL_AGENT_TIMEOUT_MS overrides it.
+  codex:
+    high: sol
+    standard: terra
+    economy: luna
+  claude:
+    high: opus
+    standard: sonnet
+    economy: haiku
+
+model_policy:
+  # These routes are enforced by the shipped daemon, not documentation-only.
+  # Worker and reviewer routes run on an execution node; reviewer receives only
+  # repo.read and cannot approve its own findings.
+  roles:
+    head-maid:
+      provider: codex
+      profile: high
+    maid:
+      provider: codex
+      profile: high
+    manager:
+      provider: codex
+      profile: high
+
+  worker_profiles:
+    researcher:
+      allowed:
+        - codex-high
+        - codex-standard
+        - claude-high
+        - claude-standard
+    implementer:
+      default: claude-standard
+      allowed:
+        - codex-high
+        - codex-standard
+        - claude-high
+        - claude-standard
+    mechanical-editor:
+      default: codex-economy
+      allowed:
+        - codex-standard
+        - codex-economy
+        - claude-standard
+        - claude-economy
+    reviewer:
+      default: codex-high
+      allowed:
+        - codex-high
+        - claude-high
+
+interaction:
+  request_accepted:
+    reactions:
+      add: eyes
+    messages: []
+  task_progressed:
+    messages: []
+  waiting_clarification:
+    reactions:
+      add: question
+    messages:
+      - thread
+  waiting_plan_approval:
+    reactions:
+      add: memo
+    messages:
+      - thread
+  waiting_review_approval:
+    reactions:
+      add: mag
+    messages:
+      - thread
+  task_completed:
+    reactions:
+      remove: [eyes, question, memo, mag]
+      add: white_check_mark
+    messages:
+      - thread
+  task_failed:
+    reactions:
+      add: warning
+    messages:
+      - thread
+
+schedules:
+  default_delivery: on-change
+  default_overlap: skip

@@ -1,0 +1,17 @@
+{
+  "name": "@meidoya/status-projector",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "description": "Deterministic, private-by-default STATUS.md projection.",
+  "dependencies": {
+    "zod": "^3.23.8",
+    "@meidoya/domain": "workspace:*"
+  }
+}

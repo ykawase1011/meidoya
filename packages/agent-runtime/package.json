@@ -1,0 +1,17 @@
+{
+  "name": "@meidoya/agent-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@meidoya/domain": "workspace:*",
+    "@meidoya/node-protocol": "workspace:*",
+    "zod": "^3.23.8"
+  }
+}

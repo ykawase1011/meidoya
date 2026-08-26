@@ -1,0 +1,33 @@
+{
+  "name": "meidoya-node",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "meidoya-node": "./dist/main.js"
+  },
+  "description": "Meidoya Execution Node daemon: sandboxed Codex/Claude runtimes on a per-node Temporal task queue.",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@meidoya/agent-runtime": "workspace:*",
+    "@meidoya/domain": "workspace:*",
+    "@meidoya/execution-native": "workspace:*",
+    "@meidoya/model-router": "workspace:*",
+    "@meidoya/node-protocol": "workspace:*",
+    "@meidoya/node-runtime": "workspace:*",
+    "@meidoya/protocol": "workspace:*",
+    "@meidoya/runtime-claude": "workspace:*",
+    "@meidoya/runtime-codex": "workspace:*",
+    "@meidoya/task-engine": "workspace:*",
+    "@meidoya/temporal-logging": "workspace:*",
+    "@meidoya/workflows-temporal": "workspace:*",
+    "@temporalio/activity": "^1.22.0",
+    "@temporalio/worker": "^1.22.0",
+    "zod": "^3.23.8"
+  }
+}

@@ -1,0 +1,3310 @@
+{
+  "events": [
+    {
+      "eventId": "1",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 404000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_STARTED",
+      "workflowExecutionStartedEventAttributes": {
+        "workflowType": {
+          "name": "TaskWorkflow"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwid29ya3NwYWNlSWQiOiJ3b3JrLWl0IiwiZW52aXJvbm1lbnRJZCI6ImhvbWUiLCJwaXBlbGluZSI6ImNvZGluZyIsImxhbmUiOiJkdXJhYmxlIiwiYnJpZWYiOnsic3VtbWFyeSI6ImFkZCBmZWF0dXJlIiwicHJvamVjdHMiOlsicDEiXSwib3JpZ2luIjoiY2hhdCJ9LCJwb2xpY3kiOnsicmVxdWVzdFBvbGljeSI6eyJxdWlja1NvZnREZWFkbGluZU1zIjoxMjAwMDAsImRlZmF1bHRQaXBlbGluZSI6ImNvZGluZyJ9LCJodW1hbkdhdGVzIjp7ImNsYXJpZmljYXRpb24iOiJuZXZlciIsInBsYW4iOiJhbHdheXMiLCJyZXZpZXciOiJuZXZlciIsInNpZGVFZmZlY3QiOiJwb2xpY3kifSwibGltaXRzIjp7Im1heFN0ZXBzIjoyNCwibWF4U3RlcFZpc2l0cyI6NSwibWF4Rml4Um91bmRzIjozLCJtYXhSZXZpZXdSb3VuZHMiOjMsIm1heE5vUHJvZ3Jlc3NSb3VuZHMiOjIsIm1heFBhcmFsbGVsV29ya2VycyI6MywibWF4TW9kZWxFc2NhbGF0aW9ucyI6MiwibWF4Q29uc2VjdXRpdmVGYWlsdXJlcyI6MywibWF4V2FsbFRpbWVNcyI6MTQ0MDAwMDB9LCJleGVjdXRpb24iOnsicHJlZmVycmVkUHJvZmlsZSI6ImNvZGV4LXN0YW5kYXJkIiwiZmFsbGJhY2tQcm9maWxlcyI6W119fSwiZXhlY3V0aW9uTm9kZUlkIjoibWFjLW1haW4iLCJ0YXNrVmVyc2lvbiI6MH0="
+            }
+          ]
+        },
+        "workflowExecutionTimeout": {
+          "seconds": "315360000"
+        },
+        "workflowRunTimeout": {
+          "seconds": "315360000"
+        },
+        "workflowTaskTimeout": {
+          "seconds": "10"
+        },
+        "originalExecutionRunId": "e0596bb1-5bfc-4873-b88b-1ef8da56d459",
+        "identity": "67479@YMS.local",
+        "firstExecutionRunId": "e0596bb1-5bfc-4873-b88b-1ef8da56d459",
+        "attempt": 1,
+        "firstWorkflowTaskBackoff": {},
+        "header": {}
+      }
+    },
+    {
+      "eventId": "2",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 404000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "3",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 404000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "2",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "971"
+      }
+    },
+    {
+      "eventId": "4",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 423000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "2",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {
+          "coreUsedFlags": [
+            1,
+            2,
+            3
+          ],
+          "sdkName": "temporal-typescript",
+          "sdkVersion": "1.22.0"
+        },
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "5",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 423000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "1",
+        "activityType": {
+          "name": "loadGatePolicy"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ3b3Jrc3BhY2VJZCI6IndvcmstaXQifQ=="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "3",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "6",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 423000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "5",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "7",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 424000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJtYW5kYXRvcnlHYXRlcyI6e30sImVmZmVjdGl2ZUdhdGVzIjp7ImNsYXJpZmljYXRpb24iOiJuZXZlciIsInBsYW4iOiJhbHdheXMiLCJyZXZpZXciOiJuZXZlciIsInNpZGVFZmZlY3QiOiJwb2xpY3kifSwicXVhbGl0eUdhdGVzIjpbeyJuYW1lIjoidGVzdCIsImFyZ3YiOlsibnBtIiwidGVzdCJdfV19"
+            }
+          ]
+        },
+        "scheduledEventId": "5",
+        "startedEventId": "6",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "8",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 424000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "9",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 424000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "8",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "1690"
+      }
+    },
+    {
+      "eventId": "10",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 427000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "8",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "11",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 427000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "2",
+        "activityType": {
+          "name": "recordTaskStatus"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwic3RhdHVzIjoicGxhbm5pbmciLCJleHBlY3RlZFZlcnNpb24iOjAsImV2ZW50VHlwZSI6IlRhc2tTdGFydGVkIiwiaWRlbXBvdGVuY3lLZXkiOiJ0YXNrOnRhc2stdHdvLXN0ZXAtcGxhbi1zaWRlLWVmZmVjdC1nYXRlLXByZS0yMDI2MDg6cGxhbm5pbmc6MSJ9"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "9",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "12",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 427000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "11",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "13",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 428000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJhcHBsaWVkIjp0cnVlLCJ2ZXJzaW9uIjoxfQ=="
+            }
+          ]
+        },
+        "scheduledEventId": "11",
+        "startedEventId": "12",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "14",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 428000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "15",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 428000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "14",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "2411"
+      }
+    },
+    {
+      "eventId": "16",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 430000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "14",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "17",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 430000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "3",
+        "activityType": {
+          "name": "createCheckpoint"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwid29ya3NwYWNlSWQiOiJ3b3JrLWl0Iiwia2luZCI6ImNsYXJpZmljYXRpb24iLCJwcm9tcHQiOiJBcHByb3ZlIGNsYXJpZnk/IiwidmVyc2lvbiI6Mn0="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "15",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "18",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 430000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "17",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "19",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 431000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJjaGVja3BvaW50SWQiOiIiLCJ2ZXJzaW9uIjoyLCJyZXF1aXJlZCI6ZmFsc2V9"
+            }
+          ]
+        },
+        "scheduledEventId": "17",
+        "startedEventId": "18",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "20",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 431000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "21",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 431000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "20",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "3091"
+      }
+    },
+    {
+      "eventId": "22",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 433000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "20",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "23",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 433000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "4",
+        "activityType": {
+          "name": "recordStepOutcome"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwic3RlcEtleSI6ImNsYXJpZnkiLCJzdGVwS2luZCI6ImNsYXJpZnkiLCJzdGF0dXMiOiJzdWNjZWVkZWQifQ=="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "21",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "24",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 433000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "23",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "25",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 434000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L251bGw="
+              }
+            }
+          ]
+        },
+        "scheduledEventId": "23",
+        "startedEventId": "24",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "26",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 434000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "27",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 434000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "26",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "3697"
+      }
+    },
+    {
+      "eventId": "28",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 436000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "26",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "29",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 436000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "5",
+        "activityType": {
+          "name": "chargeBudget"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwicm9vdFRhc2tJZCI6InRhc2stdHdvLXN0ZXAtcGxhbi1zaWRlLWVmZmVjdC1nYXRlLXByZS0yMDI2MDgiLCJraW5kIjoiYWdlbnQtcnVuIiwic3RlcEtleSI6InBsYW4ifQ=="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "27",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "30",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 436000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "29",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "31",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 437000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJhbGxvd2VkIjp0cnVlLCJzdGVwc1VzZWQiOjF9"
+            }
+          ]
+        },
+        "scheduledEventId": "29",
+        "startedEventId": "30",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "32",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 437000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "33",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 437000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "32",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "4366"
+      }
+    },
+    {
+      "eventId": "34",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 438000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "32",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "35",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 438000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "6",
+        "activityType": {
+          "name": "planTask"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwid29ya3NwYWNlSWQiOiJ3b3JrLWl0Iiwic3RlcEtleSI6InBsYW4iLCJhdHRlbXB0IjoyLCJwcm92aWRlciI6ImNvZGV4IiwibW9kZWxQcm9maWxlIjoic3RhbmRhcmQiLCJpZGVtcG90ZW5jeUtleSI6InJ1bjp0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4OnBsYW46MiJ9"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "900"
+        },
+        "heartbeatTimeout": {
+          "seconds": "60"
+        },
+        "workflowTaskCompletedEventId": "33",
+        "retryPolicy": {
+          "initialInterval": {
+            "seconds": "5"
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "60"
+          },
+          "maximumAttempts": 3,
+          "nonRetryableErrorTypes": [
+            "ScopeViolation",
+            "PolicyViolation"
+          ]
+        }
+      }
+    },
+    {
+      "eventId": "36",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 438000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "35",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "37",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 439000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJzdGF0dXMiOiJwbGFubmVkIiwicGxhbiI6eyJzdW1tYXJ5IjoicyIsInJpc2siOiJsb3ciLCJwcm9qZWN0cyI6W3sicHJvamVjdElkIjoicDEiLCJtb2RlIjoid3JpdGUifV0sInN0ZXBzIjpbeyJrZXkiOiJsb29rIiwia2luZCI6ImludmVzdGlnYXRlIiwiZGVzY3JpcHRpb24iOiJSZWFkIHRoZSBtb2R1bGUuIiwid29ya2VyUHJvZmlsZSI6InJlc2VhcmNoZXIiLCJkZXBlbmRzT24iOltdfSx7ImtleSI6ImltcGwiLCJraW5kIjoiaW1wbGVtZW50IiwiZGVzY3JpcHRpb24iOiJSZW5hbWUgdGhlIGhlbHBlci4iLCJ3b3JrZXJQcm9maWxlIjoiaW1wbGVtZW50ZXIiLCJkZXBlbmRzT24iOlsibG9vayJdfV0sImV4cGVjdGVkQXJ0aWZhY3RzIjpbXSwidmVyaWZpY2F0aW9uIjp7ImNvbW1hbmRzIjpbeyJuYW1lIjoidGVzdCJ9XX19fQ=="
+            }
+          ]
+        },
+        "scheduledEventId": "35",
+        "startedEventId": "36",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "38",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 439000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "39",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 439000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "38",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "5530"
+      }
+    },
+    {
+      "eventId": "40",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 442000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "38",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "41",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 442000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "7",
+        "activityType": {
+          "name": "createCheckpoint"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwid29ya3NwYWNlSWQiOiJ3b3JrLWl0Iiwia2luZCI6InBsYW4tYXBwcm92YWwiLCJwcm9tcHQiOiJBcHByb3ZlIHRoaXMgcGxhbj8iLCJ2ZXJzaW9uIjoyLCJyaXNrIjoibG93In0="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "39",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "42",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 442000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "41",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "43",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 443000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJjaGVja3BvaW50SWQiOiIiLCJ2ZXJzaW9uIjoyLCJyZXF1aXJlZCI6ZmFsc2V9"
+            }
+          ]
+        },
+        "scheduledEventId": "41",
+        "startedEventId": "42",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "44",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 443000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "45",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 443000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "44",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "6225"
+      }
+    },
+    {
+      "eventId": "46",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 445000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "44",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "47",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 445000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "8",
+        "activityType": {
+          "name": "recordStepOutcome"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwic3RlcEtleSI6InBsYW4iLCJzdGVwS2luZCI6InBsYW4iLCJzdGF0dXMiOiJzdWNjZWVkZWQifQ=="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "45",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "48",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 445000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "47",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "49",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 446000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L251bGw="
+              }
+            }
+          ]
+        },
+        "scheduledEventId": "47",
+        "startedEventId": "48",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "50",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 446000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "51",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 446000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "50",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "6825"
+      }
+    },
+    {
+      "eventId": "52",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 448000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "50",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "53",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 448000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "9",
+        "activityType": {
+          "name": "recordTaskStatus"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwic3RhdHVzIjoicnVubmluZyIsImV4cGVjdGVkVmVyc2lvbiI6MSwiZXZlbnRUeXBlIjoiVGFza1N0YXR1czpydW5uaW5nIiwiaWRlbXBvdGVuY3lLZXkiOiJ0YXNrOnRhc2stdHdvLXN0ZXAtcGxhbi1zaWRlLWVmZmVjdC1nYXRlLXByZS0yMDI2MDg6cnVubmluZzoyIn0="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "51",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "54",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 448000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "53",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "55",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 449000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJhcHBsaWVkIjp0cnVlLCJ2ZXJzaW9uIjoyfQ=="
+            }
+          ]
+        },
+        "scheduledEventId": "53",
+        "startedEventId": "54",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "56",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 449000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "57",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 449000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "56",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "7551"
+      }
+    },
+    {
+      "eventId": "58",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 451000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "56",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "59",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 451000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "10",
+        "activityType": {
+          "name": "chargeBudget"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwicm9vdFRhc2tJZCI6InRhc2stdHdvLXN0ZXAtcGxhbi1zaWRlLWVmZmVjdC1nYXRlLXByZS0yMDI2MDgiLCJraW5kIjoiYWdlbnQtcnVuIiwic3RlcEtleSI6ImltcGxlbWVudCJ9"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "57",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "60",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 451000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "59",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "61",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 451000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJhbGxvd2VkIjp0cnVlLCJzdGVwc1VzZWQiOjJ9"
+            }
+          ]
+        },
+        "scheduledEventId": "59",
+        "startedEventId": "60",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "62",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 451000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "63",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 451000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "62",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "8226"
+      }
+    },
+    {
+      "eventId": "64",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 453000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "62",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "65",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 453000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "11",
+        "activityType": {
+          "name": "runWorkerStep"
+        },
+        "taskQueue": {
+          "name": "meidoya/node/mac-main",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwid29ya3NwYWNlSWQiOiJ3b3JrLWl0Iiwic3RlcEtleSI6ImltcGxlbWVudCIsImF0dGVtcHQiOjMsIndvcmtlclByb2ZpbGUiOiJpbXBsZW1lbnRlciIsInByb3ZpZGVyIjoiY29kZXgiLCJtb2RlbFByb2ZpbGUiOiJzdGFuZGFyZCIsImNhcGFiaWxpdGllcyI6WyJyZXBvLnJlYWQiLCJyZXBvLndyaXRlIiwic2hlbGwiLCJuZXR3b3JrIl0sInByb2plY3RBY2Nlc3MiOlt7InByb2plY3RJZCI6InAxIiwibW9kZSI6IndyaXRlIn1dLCJpZGVtcG90ZW5jeUtleSI6InJ1bjp0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4OmltcGxlbWVudDozIn0="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "7200"
+        },
+        "heartbeatTimeout": {
+          "seconds": "120"
+        },
+        "workflowTaskCompletedEventId": "63",
+        "retryPolicy": {
+          "initialInterval": {
+            "seconds": "10"
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "300"
+          },
+          "maximumAttempts": 3,
+          "nonRetryableErrorTypes": [
+            "ScopeViolation",
+            "PolicyViolation"
+          ]
+        }
+      }
+    },
+    {
+      "eventId": "66",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 453000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "65",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "67",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 454000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0eXBlIjoiY29tcGxldGVkIiwic3VtbWFyeSI6ImRvbmUiLCJhcnRpZmFjdHMiOltdLCJldmlkZW5jZSI6W119"
+            }
+          ]
+        },
+        "scheduledEventId": "65",
+        "startedEventId": "66",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "68",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 454000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "69",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 454000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "68",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "9202"
+      }
+    },
+    {
+      "eventId": "70",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 456000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "68",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "71",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 456000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "12",
+        "activityType": {
+          "name": "recordStepOutcome"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwic3RlcEtleSI6ImltcGxlbWVudCIsInN0ZXBLaW5kIjoiaW1wbGVtZW50Iiwic3RhdHVzIjoic3VjY2VlZGVkIn0="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "69",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "72",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 456000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "71",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "73",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 456000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L251bGw="
+              }
+            }
+          ]
+        },
+        "scheduledEventId": "71",
+        "startedEventId": "72",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "74",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 456000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "75",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 456000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "74",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "9813"
+      }
+    },
+    {
+      "eventId": "76",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 458000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "74",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "77",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 458000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "13",
+        "activityType": {
+          "name": "recordTaskStatus"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwic3RhdHVzIjoidmVyaWZ5aW5nIiwiZXhwZWN0ZWRWZXJzaW9uIjoyLCJldmVudFR5cGUiOiJUYXNrU3RhdHVzOnZlcmlmeWluZyIsImlkZW1wb3RlbmN5S2V5IjoidGFzazp0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4OnZlcmlmeWluZzozIn0="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "75",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "78",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 458000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "77",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "79",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 459000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJhcHBsaWVkIjp0cnVlLCJ2ZXJzaW9uIjozfQ=="
+            }
+          ]
+        },
+        "scheduledEventId": "77",
+        "startedEventId": "78",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "80",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 459000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "81",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 459000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "80",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "10546"
+      }
+    },
+    {
+      "eventId": "82",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 464000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "80",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "83",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 464000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "14",
+        "activityType": {
+          "name": "chargeBudget"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwicm9vdFRhc2tJZCI6InRhc2stdHdvLXN0ZXAtcGxhbi1zaWRlLWVmZmVjdC1nYXRlLXByZS0yMDI2MDgiLCJraW5kIjoidmVyaWZpY2F0aW9uLWdyb3VwIiwic3RlcEtleSI6InZlcmlmeSJ9"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "81",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "84",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 464000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "83",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "85",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 465000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJhbGxvd2VkIjp0cnVlLCJzdGVwc1VzZWQiOjN9"
+            }
+          ]
+        },
+        "scheduledEventId": "83",
+        "startedEventId": "84",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "86",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 465000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "87",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 465000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "86",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "11227"
+      }
+    },
+    {
+      "eventId": "88",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 466000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "86",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "89",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 466000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "15",
+        "activityType": {
+          "name": "runVerification"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwid29ya3NwYWNlSWQiOiJ3b3JrLWl0Iiwic3RlcEtleSI6InZlcmlmeSIsInBsYW4iOnsiY29tbWFuZHMiOlt7Im5hbWUiOiJ0ZXN0In1dfSwiZXhwZWN0ZWRBcnRpZmFjdHMiOltdfQ=="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "1800"
+        },
+        "heartbeatTimeout": {
+          "seconds": "120"
+        },
+        "workflowTaskCompletedEventId": "87",
+        "retryPolicy": {
+          "initialInterval": {
+            "seconds": "5"
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "500"
+          },
+          "maximumAttempts": 2
+        }
+      }
+    },
+    {
+      "eventId": "90",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 466000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "89",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "91",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 467000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJzdGF0dXMiOiJwYXNzZWQiLCJncm91cHMiOltdLCJtaXNzaW5nQXJ0aWZhY3RzIjpbXSwiYXJ0aWZhY3RzIjpbXSwiZXZpZGVuY2UiOltdfQ=="
+            }
+          ]
+        },
+        "scheduledEventId": "89",
+        "startedEventId": "90",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "92",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 467000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "93",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 467000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "92",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "11960"
+      }
+    },
+    {
+      "eventId": "94",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 468000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "92",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "95",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 468000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "16",
+        "activityType": {
+          "name": "recordStepOutcome"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwic3RlcEtleSI6InZlcmlmeSIsInN0ZXBLaW5kIjoidmVyaWZ5Iiwic3RhdHVzIjoic3VjY2VlZGVkIn0="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "93",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "96",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 468000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "95",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "97",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 469000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L251bGw="
+              }
+            }
+          ]
+        },
+        "scheduledEventId": "95",
+        "startedEventId": "96",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "98",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 469000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "99",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 469000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "98",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "12565"
+      }
+    },
+    {
+      "eventId": "100",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 470000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "98",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "101",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 470000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "17",
+        "activityType": {
+          "name": "recordTaskStatus"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwic3RhdHVzIjoicmV2aWV3aW5nIiwiZXhwZWN0ZWRWZXJzaW9uIjozLCJldmVudFR5cGUiOiJUYXNrU3RhdHVzOnJldmlld2luZyIsImlkZW1wb3RlbmN5S2V5IjoidGFzazp0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4OnJldmlld2luZzo0In0="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "99",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "102",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 470000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "101",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "103",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 471000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJhcHBsaWVkIjp0cnVlLCJ2ZXJzaW9uIjo0fQ=="
+            }
+          ]
+        },
+        "scheduledEventId": "101",
+        "startedEventId": "102",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "104",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 471000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "105",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 471000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "104",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "13298"
+      }
+    },
+    {
+      "eventId": "106",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 473000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "104",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "107",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 473000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "18",
+        "activityType": {
+          "name": "chargeBudget"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwicm9vdFRhc2tJZCI6InRhc2stdHdvLXN0ZXAtcGxhbi1zaWRlLWVmZmVjdC1nYXRlLXByZS0yMDI2MDgiLCJraW5kIjoicmV2aWV3LWdyb3VwIiwic3RlcEtleSI6InJldmlldyJ9"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "105",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "108",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 473000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "107",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "109",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 473000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJhbGxvd2VkIjp0cnVlLCJzdGVwc1VzZWQiOjR9"
+            }
+          ]
+        },
+        "scheduledEventId": "107",
+        "startedEventId": "108",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "110",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 473000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "111",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 473000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "110",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "13973"
+      }
+    },
+    {
+      "eventId": "112",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 475000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "110",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "113",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 475000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "19",
+        "activityType": {
+          "name": "chargeBudget"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwicm9vdFRhc2tJZCI6InRhc2stdHdvLXN0ZXAtcGxhbi1zaWRlLWVmZmVjdC1nYXRlLXByZS0yMDI2MDgiLCJraW5kIjoicmV2aWV3LXJvdW5kIiwic3RlcEtleSI6InJldmlldyJ9"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "111",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "114",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 475000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "113",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "115",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 475000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJhbGxvd2VkIjp0cnVlLCJzdGVwc1VzZWQiOjV9"
+            }
+          ]
+        },
+        "scheduledEventId": "113",
+        "startedEventId": "114",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "116",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 475000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "117",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 475000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "116",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "14648"
+      }
+    },
+    {
+      "eventId": "118",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 477000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "116",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "119",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 477000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "20",
+        "activityType": {
+          "name": "runReview"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwid29ya3NwYWNlSWQiOiJ3b3JrLWl0Iiwic3RlcEtleSI6InJldmlldyIsImF0dGVtcHQiOjUsInByb3ZpZGVyIjoiY29kZXgiLCJtb2RlbFByb2ZpbGUiOiJzdGFuZGFyZCIsImlkZW1wb3RlbmN5S2V5IjoicnVuOnRhc2stdHdvLXN0ZXAtcGxhbi1zaWRlLWVmZmVjdC1nYXRlLXByZS0yMDI2MDg6cmV2aWV3OjUifQ=="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "900"
+        },
+        "heartbeatTimeout": {
+          "seconds": "60"
+        },
+        "workflowTaskCompletedEventId": "117",
+        "retryPolicy": {
+          "initialInterval": {
+            "seconds": "5"
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "60"
+          },
+          "maximumAttempts": 3,
+          "nonRetryableErrorTypes": [
+            "ScopeViolation",
+            "PolicyViolation"
+          ]
+        }
+      }
+    },
+    {
+      "eventId": "120",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 477000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "119",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "121",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 477000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJmaW5kaW5ncyI6W119"
+            }
+          ]
+        },
+        "scheduledEventId": "119",
+        "startedEventId": "120",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "122",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 477000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "123",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 477000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "122",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "15414"
+      }
+    },
+    {
+      "eventId": "124",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 479000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "122",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "125",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 479000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "21",
+        "activityType": {
+          "name": "decideNextAction"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwid29ya3NwYWNlSWQiOiJ3b3JrLWl0IiwiZmluZGluZ3MiOnsiZmluZGluZ3MiOltdfSwidmVyaWZpY2F0aW9uIjp7InN0YXR1cyI6InBhc3NlZCIsImdyb3VwcyI6W10sIm1pc3NpbmdBcnRpZmFjdHMiOltdLCJhcnRpZmFjdHMiOltdLCJldmlkZW5jZSI6W119LCJwcm92aWRlciI6ImNvZGV4IiwibW9kZWxQcm9maWxlIjoic3RhbmRhcmQiLCJpZGVtcG90ZW5jeUtleSI6InJ1bjp0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4OnJldmlldy1kZWNpc2lvbjo1In0="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "900"
+        },
+        "heartbeatTimeout": {
+          "seconds": "60"
+        },
+        "workflowTaskCompletedEventId": "123",
+        "retryPolicy": {
+          "initialInterval": {
+            "seconds": "5"
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "60"
+          },
+          "maximumAttempts": 3,
+          "nonRetryableErrorTypes": [
+            "ScopeViolation",
+            "PolicyViolation"
+          ]
+        }
+      }
+    },
+    {
+      "eventId": "126",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 479000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "125",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "127",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 479000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0eXBlIjoiY29tcGxldGUifQ=="
+            }
+          ]
+        },
+        "scheduledEventId": "125",
+        "startedEventId": "126",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "128",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 479000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "129",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 479000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "128",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "16295"
+      }
+    },
+    {
+      "eventId": "130",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 481000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "128",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "131",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 481000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "22",
+        "activityType": {
+          "name": "recordStepOutcome"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwic3RlcEtleSI6InJldmlldyIsInN0ZXBLaW5kIjoicmV2aWV3Iiwic3RhdHVzIjoic3VjY2VlZGVkIn0="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "129",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "132",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 481000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "131",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "133",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 482000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L251bGw="
+              }
+            }
+          ]
+        },
+        "scheduledEventId": "131",
+        "startedEventId": "132",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "134",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 482000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "135",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 482000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "134",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "16912"
+      }
+    },
+    {
+      "eventId": "136",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 483000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "134",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "137",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 483000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "23",
+        "activityType": {
+          "name": "createCheckpoint"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwid29ya3NwYWNlSWQiOiJ3b3JrLWl0Iiwia2luZCI6InJldmlldy1hcHByb3ZhbCIsInByb21wdCI6IkFwcHJvdmUgY29tcGxldGlvbj8iLCJ2ZXJzaW9uIjo1LCJoYXNGaW5kaW5ncyI6ZmFsc2V9"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "135",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "138",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 483000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "137",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "139",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 484000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJjaGVja3BvaW50SWQiOiIiLCJ2ZXJzaW9uIjo1LCJyZXF1aXJlZCI6ZmFsc2V9"
+            }
+          ]
+        },
+        "scheduledEventId": "137",
+        "startedEventId": "138",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "140",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 484000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "141",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 484000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "140",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "17631"
+      }
+    },
+    {
+      "eventId": "142",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 485000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "140",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "143",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 485000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "24",
+        "activityType": {
+          "name": "completeTask"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "header": {},
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwid29ya3NwYWNlSWQiOiJ3b3JrLWl0IiwicGlwZWxpbmUiOiJjb2RpbmciLCJleHBlY3RlZFZlcnNpb24iOjQsImV2ZW50SWQiOiJiNGE4NzkxNi0xZWViLTQ5YzktYWMzMy02NmUxYTJhOTMzNTEiLCJzdW1tYXJ5IjoiYWRkIGZlYXR1cmUiLCJ2ZXJpZmljYXRpb25SZXF1aXJlZCI6dHJ1ZSwidmVyaWZpY2F0aW9uIjp7InN0YXR1cyI6InBhc3NlZCIsImdyb3VwcyI6W10sIm1pc3NpbmdBcnRpZmFjdHMiOltdLCJhcnRpZmFjdHMiOltdLCJldmlkZW5jZSI6W119LCJmaW5kaW5ncyI6eyJmaW5kaW5ncyI6W119LCJyZXZpZXdHYXRlU2F0aXNmaWVkIjp0cnVlLCJyZXF1aXJlZEFydGlmYWN0UGF0aHMiOltdfQ=="
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": {
+          "seconds": "315360000"
+        },
+        "scheduleToStartTimeout": {
+          "seconds": "315360000"
+        },
+        "startToCloseTimeout": {
+          "seconds": "30"
+        },
+        "heartbeatTimeout": {},
+        "workflowTaskCompletedEventId": "141",
+        "retryPolicy": {
+          "initialInterval": {
+            "nanos": 200000000
+          },
+          "backoffCoefficient": 2,
+          "maximumInterval": {
+            "seconds": "10"
+          },
+          "maximumAttempts": 10
+        }
+      }
+    },
+    {
+      "eventId": "144",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 485000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "143",
+        "identity": "67479@YMS.local",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "145",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 486000000
+      },
+      "eventType": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJzdGF0dXMiOiJjb21wbGV0ZWQifQ=="
+            }
+          ]
+        },
+        "scheduledEventId": "143",
+        "startedEventId": "144",
+        "identity": "67479@YMS.local"
+      }
+    },
+    {
+      "eventId": "146",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 486000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "147",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 486000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "146",
+        "identity": "67479@YMS.local",
+        "historySizeBytes": "18552"
+      }
+    },
+    {
+      "eventId": "148",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 487000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "146",
+        "identity": "67479@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+7dbe6b05074ffd1d1052f813434b02c70a2b34d266a6462bfbc04931b5f0bcd0",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "149",
+      "eventTime": {
+        "seconds": "2102348271",
+        "nanos": 487000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_COMPLETED",
+      "workflowExecutionCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJ0YXNrSWQiOiJ0YXNrLXR3by1zdGVwLXBsYW4tc2lkZS1lZmZlY3QtZ2F0ZS1wcmUtMjAyNjA4Iiwic3RhdHVzIjoiY29tcGxldGVkIiwibGFuZSI6ImR1cmFibGUiLCJwaXBlbGluZSI6ImNvZGluZyIsInByb21vdGVkIjpmYWxzZX0="
+            }
+          ]
+        },
+        "workflowTaskCompletedEventId": "147"
+      }
+    }
+  ]
+}

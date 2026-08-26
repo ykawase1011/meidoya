@@ -1,0 +1,27 @@
+node_modules/
+dist/
+# Agent worktrees live here; they are checkouts of this repo, not content.
+.claude/
+*.tsbuildinfo
+.DS_Store
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+.env
+.env.*
+!.env.example
+
+# Runtime-provisioned client credentials and scope-token secrets.
+# The daemon writes these under its data dir at 0600; they must never be committed.
+*.secret
+*.token
+*.pem
+*.key
+*.p12
+*.pfx
+/config/
+/data/
+/secrets/
+clients/
+scope-token.key
+coverage/

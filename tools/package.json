@@ -1,0 +1,6 @@
+{
+  "//": "Not a workspace package (the workspace globs are apps/* and packages/*). This file exists only to make tools/ ESM, so these scripts can run under Node's native type stripping and use import.meta.",
+  "name": "@meidoya/tools",
+  "private": true,
+  "type": "module"
+}

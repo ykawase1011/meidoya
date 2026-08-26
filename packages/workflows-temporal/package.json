@@ -1,0 +1,26 @@
+{
+  "name": "@meidoya/workflows-temporal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@meidoya/domain": "workspace:*",
+    "@meidoya/node-protocol": "workspace:*",
+    "@meidoya/task-engine": "workspace:*",
+    "@temporalio/activity": "^1.22.0",
+    "@temporalio/client": "^1.22.0",
+    "@temporalio/worker": "^1.22.0",
+    "@temporalio/workflow": "^1.22.0"
+  },
+  "devDependencies": {
+    "@meidoya/temporal-test-env": "workspace:*",
+    "@temporalio/proto": "1.22.0",
+    "@temporalio/testing": "^1.22.0"
+  }
+}

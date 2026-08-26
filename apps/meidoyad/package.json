@@ -1,0 +1,54 @@
+{
+  "name": "meidoyad",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "meidoyad": "./dist/main.js",
+    "meidoya-demo": "./dist/demo/local-demo.js"
+  },
+  "description": "Meidoya Control Plane daemon: Control Plane API, chat gateway, Temporal control worker, SQLite writer, notification outbox and STATUS.md projector.",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "demo": "node dist/demo/local-demo.js"
+  },
+  "dependencies": {
+    "@meidoya/agent-runtime": "workspace:*",
+    "@meidoya/chat-core": "workspace:*",
+    "@meidoya/chat-vercel": "workspace:*",
+    "@meidoya/checkpoint-policy": "workspace:*",
+    "@meidoya/domain": "workspace:*",
+    "@meidoya/execution-budget": "workspace:*",
+    "@meidoya/interaction-policy": "workspace:*",
+    "@meidoya/model-router": "workspace:*",
+    "@meidoya/node-protocol": "workspace:*",
+    "@meidoya/node-runtime": "workspace:*",
+    "@meidoya/notification-outbox": "workspace:*",
+    "@meidoya/protocol": "workspace:*",
+    "@meidoya/roles": "workspace:*",
+    "@meidoya/runtime-claude": "workspace:*",
+    "@meidoya/runtime-codex": "workspace:*",
+    "@meidoya/status-projector": "workspace:*",
+    "@meidoya/store-sqlite": "workspace:*",
+    "@meidoya/task-engine": "workspace:*",
+    "@meidoya/temporal-logging": "workspace:*",
+    "@meidoya/workflows-temporal": "workspace:*",
+    "@meidoya/workspace-scope": "workspace:*",
+    "@temporalio/client": "^1.22.0",
+    "@temporalio/worker": "^1.22.0",
+    "better-sqlite3": "^11.3.0",
+    "js-yaml": "^4.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@meidoya/temporal-test-env": "workspace:*",
+    "@temporalio/testing": "^1.22.0",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/js-yaml": "^4.0.9",
+    "meidoya": "workspace:*",
+    "meidoya-node": "workspace:*"
+  }
+}

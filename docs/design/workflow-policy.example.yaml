@@ -1,0 +1,104 @@
+schema_version: 1
+
+# MVPでは任意のstate machineを定義しません。
+# 固定pipelineのGate、limit、quality checkだけを設定します。
+#
+# This file is illustrative only — nothing in the codebase parses it. The
+# `human_gates` / `limits` / `quality_gates` shown per pipeline below describe
+# each fixed pipeline's intended defaults, but the control-plane config loader
+# (apps/meidoyad/src/config.ts) reads the operator-configurable versions of
+# these per WORKSPACE, not per pipeline: `workspaces.<id>.human_gates`,
+# `workspaces.<id>.security_policy.mandatory_gates`, and
+# `workspaces.<id>.quality_gates.commands` in config.example.yaml.
+#
+# There is NO default catalog. A workspace that configures no `quality_gates`
+# block sends none, and the execution node refuses to verify rather than
+# guessing a command. Falling back to a built-in `npm test` would have been
+# indistinguishable from an operator deliberately choosing it, and would run a
+# repository's own `package.json` scripts — which a worker in the same task can
+# edit. The `coding` block below is an example to copy, not a default.
+#
+# The node also keeps its own `quality_gates` allowlist (see node.example.yaml)
+# and refuses any argv it cannot justify against it, so the control plane cannot
+# redefine what a gate name means on that node. That is why the `coding` gates
+# below are ABSOLUTE paths matching node.example.yaml token for token: this file
+# used to show `npm test`, which a node refuses twice over — `npm` is not an
+# absolute path (its PATH would decide what runs) and it does not match any
+# entry in the node's allowlist, so copying it produced a node that refused
+# every verification.
+
+pipelines:
+  quick:
+    human_gates:
+      clarification: when-needed
+      plan: never
+      review: never
+    limits:
+      max_steps: 4
+      max_parallel_workers: 1
+      max_wall_time: 2m
+
+  research:
+    human_gates:
+      clarification: when-needed
+      plan: on-risk
+      review: on-findings
+    limits:
+      max_steps: 16
+      max_step_visits: 4
+      max_review_rounds: 2
+      max_no_progress_rounds: 2
+      max_wall_time: 2h
+
+  coding:
+    human_gates:
+      clarification: when-needed
+      plan: always
+      review: before-complete
+      side_effect: policy
+    limits:
+      max_steps: 24
+      max_step_visits: 5
+      max_fix_rounds: 3
+      max_review_rounds: 3
+      max_no_progress_rounds: 2
+      max_parallel_workers: 3
+      max_model_escalations: 2
+      max_wall_time: 4h
+    quality_gates:
+      commands:
+        # Same argv as docs/design/config.example.yaml and node.example.yaml,
+        # token for token — a node justifies the incoming argv against its own
+        # list and refuses anything else. `/usr/bin/make` because argv[0] must
+        # EXIST on the node (it is stat'ed at startup): the `/usr/local/bin/…`
+        # paths this file used to name exist on no stock machine, and every
+        # gate failed with exit 71 and no path in the message.
+        - name: test
+          command: /usr/bin/make test
+        - name: lint
+          command: /usr/bin/make lint
+        - name: typecheck
+          command: /usr/bin/make typecheck
+
+  scheduled:
+    human_gates:
+      clarification: never
+      plan: never
+      review: on-findings
+    limits:
+      max_steps: 16
+      max_fix_rounds: 1
+      max_review_rounds: 2
+      max_wall_time: 2h
+    delivery:
+      mode: on-change
+
+  cross-workspace:
+    human_gates:
+      clarification: when-needed
+      plan: always
+      review: before-complete
+    limits:
+      max_steps: 40
+      max_parallel_workers: 4
+      max_wall_time: 8h

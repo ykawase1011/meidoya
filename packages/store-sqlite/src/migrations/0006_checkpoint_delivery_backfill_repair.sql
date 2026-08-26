@@ -1,0 +1,32 @@
+-- 0006: WITHDRAWN. Its work now lives in 0008, after the provenance column.
+--
+-- 0006 used to repair what the ORIGINAL 0005 backfill got wrong, and claimed in
+-- its own header to be a no-op on a database that only ever ran the corrected
+-- 0005. It was not, and the failure was the exact damage the header ruled out:
+--
+--   1. Migrate to v5 (corrected 0005). Task `t1` is `executing`; its
+--      `review-approval` checkpoint is `approved`, so the corrected backfill
+--      latches it with a historical `signalled_at` — the right call.
+--   2. Weeks later `t1` hits a step failure and parks in `needs_attention`.
+--   3. The daemon is upgraded and 0006 runs.
+--
+-- Its first statement re-opened that delivered answer and wiped its
+-- provenance, because the ledger boundary check passed (it IS a pre-boundary
+-- row — the backfill wrote it) while the task-status check read the status at
+-- REPAIR time rather than at 0005 time. The sweep then re-signalled; with the
+-- workflow long gone, two sweeps corroborate and it emits a false
+-- `CheckpointAnswerDiscarded` plus the "DISCARDED a committed checkpoint
+-- answer" log line — a false alarm on the one report that must never cry wolf.
+--
+-- The discriminator the repair actually needs is "was this row left in the
+-- ORIGINAL 0005's wrong bucket", and the only stored fact that comes close is
+-- `signalled_by`, which does not exist until 0007. So the repair moved to 0008,
+-- keyed on provenance and on the migration ledger's record of WHICH 0005 ran,
+-- and this migration is left as an empty tombstone: a database that already
+-- recorded version 6 will never re-run it, so emptying it cannot disturb one,
+-- and every database that has not reached 6 yet is better served by 0008.
+--
+-- (A database that already recorded the OLD 0006 may carry its damage. Nothing
+-- later can undo it: the wrong predicate destroyed the very bit that told a
+-- re-opened row from a genuine one. Such a database is a pre-release developer
+-- database and should be recreated.)

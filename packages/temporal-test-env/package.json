@@ -1,0 +1,17 @@
+{
+  "name": "@meidoya/temporal-test-env",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "description": "Test-only: starts time-skipping Temporal servers under a machine-wide start semaphore on ports it reserves, and reaps only the servers whose reservations a dead run left behind.",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@meidoya/temporal-logging": "workspace:*",
+    "@temporalio/testing": "^1.22.0"
+  }
+}

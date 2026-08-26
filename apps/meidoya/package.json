@@ -1,0 +1,25 @@
+{
+  "name": "meidoya",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "meidoya": "./dist/main.js"
+  },
+  "description": "Meidoya CLI: submit requests, follow tasks, answer checkpoints and manage schedules over the Control Plane unix socket.",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@meidoya/domain": "workspace:*",
+    "@meidoya/protocol": "workspace:*",
+    "@meidoya/store-sqlite": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "better-sqlite3": "^11.3.0"
+  }
+}

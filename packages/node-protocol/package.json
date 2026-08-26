@@ -1,0 +1,17 @@
+{
+  "name": "@meidoya/node-protocol",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "description": "Wire contract between meidoya (Core) and meidoya-yashiki / meidoya-node (Execution Nodes). Cross-repository stable API.",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  }
+}

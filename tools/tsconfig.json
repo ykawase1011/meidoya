@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    // `tools/` is run by Node's native type stripping, never compiled, so
+    // relative imports carry a `.ts` extension and nothing is emitted.
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "rootDir": ".",
+    "declaration": false,
+    "types": ["node"]
+  },
+  "include": ["**/*.ts"]
+}

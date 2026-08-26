@@ -1,0 +1,233 @@
+schema_version: 1
+
+node:
+  id: mac-main
+  profile: mac-restricted
+  control_plane: unix://~/.local/share/meidoya/meidoya.sock
+  temporal:
+    address: 127.0.0.1:7233
+    namespace: default
+    task_queue: meidoya/node/mac-main
+  max_concurrency: 4
+
+workspaces:
+  work-grammarxiv:
+    projects:
+      grammarxiv:
+        path: ~/Workspace/Repositories/GrammarXiv
+
+  work-it:
+    projects:
+      product-a:
+        path: ~/Workspace/Repositories/product-a
+      product-b:
+        path: ~/Workspace/Repositories/product-b
+      shared-library:
+        path: ~/Workspace/Repositories/shared-library
+
+filesystem:
+  allowed_roots:
+    - ~/Workspace/Repositories
+    - ~/.local/share/meidoya/worktrees
+  allow_home_fallback: false
+
+runtimes:
+  codex:
+    enabled: true
+    mode: sdk
+    auth: chatgpt-subscription
+  claude:
+    enabled: true
+    mode: cli
+    auth: claude-subscription
+
+# This node's local grant (10 section 6-7). A run's actual capability set is
+# the INTERSECTION of this list with whatever the control plane granted for
+# that run, so listing a capability here does not hand it to every run — it
+# only makes it eligible. In particular, `external-side-effect` MUST be
+# present here for an approved side-effect gate to grant anything at all: the
+# control plane only ever adds that capability after a human answered the
+# gate, and if it is missing from this local list the intersection strips it
+# back out, silently turning the approval into a no-op.
+capabilities:
+  - repo.read
+  - repo.write
+  - shell
+  - network
+  - package-install
+  - external-side-effect
+
+# This node's OWN quality-gate allowlist. REQUIRED to run any verification at
+# all: verification is DENY BY DEFAULT, and this list is the only thing that
+# can turn a Control Plane request into a spawned process.
+#
+# A verification activity arrives carrying the workspace's catalog (the Control
+# Plane owns that), and the node executes an argv only when it appears here —
+# the same intersection rule as `capabilities` above. Name AND argv must match
+# exactly, token for token. A node with NO `quality_gates:` runs no gates: every
+# verification is refused with a PolicyViolation naming this key. That is
+# deliberate. This used to fall back to a structural denylist of known-bad
+# shapes, and an adversarial review got 69 of 75 crafted argvs past it —
+# `php -r`, `pwsh -Command`, `git -c alias.q='!curl…' q`, `docker run -v /:/host`,
+# `uv run`, `gradle`, `mise x -- scripts/gate.sh`. Denylists lose that game; the
+# operator naming the binary does not.
+#
+# Listing a gate here is still not blanket permission, but be clear about what
+# the remaining check does and does not do. It refuses three things, and all
+# three are about a token that names something you did NOT choose:
+#   * a program the gate's PATH would resolve (`vitest`, `pytest`, `gate`) —
+#     argv[0] must be an ABSOLUTE path, because PATH is not your config;
+#   * a checkout-relative path in ANY position (`./run.sh`,
+#     `timeout 60 scripts/gate.sh`, `mise x -- scripts/gate.sh`,
+#     `--manifest-path crates/x/Cargo.toml`), because a `repo.write` worker in
+#     the SAME task edits those files;
+#   * flags whose documented meaning is "execute this" (`find -exec`,
+#     `tar --checkpoint-action=exec=…`).
+# `meidoya-node` refuses to start on an entry it cannot justify. Use an absolute
+# path, or an attached `--flag=value` spelling, or say `allow_unsafe: true`.
+#
+# It NO LONGER refuses shells, interpreters, container runners or repo-defined
+# script tables by NAME. That table (`sh`, `bash`, `node -e`, `python -m`,
+# `npm`, `pnpm`, `make`, `gradle`, `docker`, …) was ~400 lines and it was
+# deleted, because it was measuring the wrong thing: the three gates recommended
+# below are `vitest`, `eslint` and `tsc`, and `vitest` executes
+# `vitest.config.ts` while `eslint` executes `eslint.config.js` — both
+# repo-authored JavaScript, both editable by the same task's implement step. So
+# "name the real binary and the checkout no longer decides what executes" was
+# never true, not even here. `/bin/sh -c …` and `npx tsx foo.ts` are now
+# accepted from an operator who writes them, exactly like `vitest run` always
+# was.
+#
+# What replaced it is a boundary around the CHILD rather than around its argv,
+# and it is not optional:
+#   * every gate gets a SCRATCH HOME (and TMPDIR) under the system temp dir, not
+#     the node operator's home. Stripping ANTHROPIC_API_KEY from the environment
+#     while handing the same process a HOME containing
+#     `~/.claude/.credentials.json` protected nothing.
+#   * every gate runs under an OS-LEVEL sandbox. On `mac-restricted` that is
+#     `sandbox-exec` with a generated profile: writes are an allowlist (the
+#     checkout and the scratch HOME, nothing else); reads of the credential
+#     stores (`.ssh`, `.aws`, `.claude`, `.codex`, `.config` — which is where
+#     `gh`, `gcloud` and friends actually keep their tokens — and
+#     `~/Library/Keychains`) are denied by the kernel; the daemon's `data_dir`
+#     and its control socket are denied by path, because that directory holds
+#     the per-binding bearer credentials and that socket accepts them; and
+#     NETWORK is denied outright unless you list an address in
+#     `quality_gate_network:` below. If `/usr/bin/sandbox-exec` is missing,
+#     verification is REFUSED rather than run unconfined.
+#     What is NOT confined, stated plainly so you can decide: a gate can still
+#     READ ordinary files anywhere else on this node, including other
+#     checkouts belonging to workspaces this run has no binding for. Reads
+#     outside this run's narrowed sandbox are not denied by path.
+#   * `profile: linux-restricted` REFUSES verification outright. The dedicated
+#     OS user / rootless container / read-only root of 10 section 4 is a
+#     deployment plan this process describes and does not apply, so there is no
+#     per-child boundary to run a gate behind. Send verification to a
+#     `lima-trusted` node, where the guest VM is the boundary.
+#
+# ARGV[0] MUST EXIST ON THIS NODE. `meidoya-node` stats it at startup and
+# refuses to start when it does not, naming the binary — because the failure it
+# used to produce was undiagnosable: every gate exited 71 (`spawn ENOENT`) from
+# a retried Temporal activity whose message contained no path at all. This file
+# used to ship `/usr/local/bin/vitest`, `/usr/local/bin/eslint` and
+# `/usr/local/bin/tsc`; NONE of those exists on a stock macOS or Linux machine,
+# so an operator who copied this file literally got 100% failure of every gate
+# and nothing to grep for.
+#
+# That is why the shipped entries below are `/usr/bin/make`: it is the one gate
+# runner that lives at the same absolute path on every machine, so this file
+# RUNS as shipped (`shipped-examples.test.ts` executes it). Be clear about what
+# it costs — `make test` means the checkout's Makefile decides what executes,
+# and the same task's implement step can write that Makefile. That is not a new
+# exposure: `vitest` executes `vitest.config.ts` and `eslint` executes
+# `eslint.config.js`, both equally repo-authored. The boundary is the confined
+# child, not the name in argv[0]. If you would rather name a toolchain binary,
+# do — run `command -v vitest` ON THIS NODE and paste the absolute path it
+# prints, in BOTH this file and the workspace catalog:
+#
+#   - name: test
+#     argv: ["/Users/you/Library/pnpm/vitest", "run", "--reporter=dot"]
+#   - name: lint
+#     argv: ["/Users/you/Library/pnpm/eslint", ".", "--max-warnings=0"]
+#   - name: typecheck
+#     argv: ["/Users/you/Library/pnpm/tsc", "--noEmit"]
+#
+# A bare name is refused: PATH would decide, not you. And a gate's PATH is no
+# longer this process's — it is derived from the argv[0]s configured here, with
+# the system directories first, so the checkout cannot win a shebang lookup.
+#
+# THE LIST BELOW MUST AGREE, TOKEN FOR TOKEN, WITH `quality_gates.commands` OF
+# EVERY WORKSPACE THIS NODE SERVES (docs/design/config.example.yaml). The match
+# is exact — same name, same argv, same order — because the node justifies the
+# incoming argv rather than trusting it; there is no normalisation, no PATH
+# lookup and no partial credit. `npm test` in the workspace catalog against
+# `/usr/local/bin/vitest run --reporter=dot` here means every verification is
+# refused. Only the gates a plan actually SELECTS have to be justified, so a
+# node may legitimately configure a subset of the workspace catalog (a node
+# without a Rust toolchain need not list the `cargo` gate); for the gates it
+# does list, agreement is total. `shipped-examples.test.ts` boots this file and
+# config.example.yaml together and fails if they drift apart.
+quality_gates:
+  - name: test
+    argv: ["/usr/bin/make", "test"]
+  - name: lint
+    argv: ["/usr/bin/make", "lint"]
+  - name: typecheck
+    argv: ["/usr/bin/make", "typecheck"]
+
+  # If you genuinely want the checkout to decide what the gate runs — the
+  # `pnpm -r test` shape this file used to teach — you must say so per entry.
+  # Doing this means: whatever the task's implementer wrote into package.json
+  # executes on this node.
+  # - name: test
+  #   argv: ["pnpm", "-r", "test"]
+  #   allow_unsafe: true
+
+# Extra environment variables quality gates may see, on top of the minimal
+# PATH / LANG set they are given (HOME and TMPDIR are always this run's scratch
+# directory and cannot be widened from here). Gates NEVER inherit this process's
+# environment: the node's agent credentials live there, and a gate runs
+# repo-authored code (a `vitest.config.ts` or `conftest.py` the implement step
+# just wrote, an install hook). Two families are refused here and the node will
+# not start if one is listed:
+#   * credentials (`ANTHROPIC_API_KEY`, `GH_TOKEN`, …);
+#   * variables that redirect or inject code into whatever receives them
+#     (`NODE_OPTIONS`, `LD_PRELOAD`, `DYLD_*`, `GIT_SSH_COMMAND`, `*_PROXY`,
+#     `*_BASE_URL`, `NODE_EXTRA_CA_CERTS`). These are refused on the
+#     control-plane-to-node direction for the process that HOLDS the
+#     credentials; they are not safer in the process that runs the checkout's
+#     code.
+quality_gate_env:
+  - CI
+  - CARGO_HOME
+  - RUSTUP_HOME
+
+# Addresses quality gates may connect to, as `host:port`. EMPTY MEANS NO
+# NETWORK: the generated sandbox profile says `(deny network*)`, which covers
+# unix sockets as well as TCP — that is what puts the daemon's control socket
+# out of reach of a process that runs repo-authored code and holds no
+# capability grant of any kind. The three gates above are offline, so nothing
+# is listed.
+#
+# This is NOT `network.allowed_domains` below, and it cannot be. The only
+# grammar `sandbox-exec` accepts is `localhost:<port>` or `*:<port>` (either
+# half may be `*`); a host name there is a PARSE ERROR, so the gate would not
+# start at all, and `127.0.0.1:5432` is rejected too (write `localhost:5432`).
+# There is no per-host egress allowlist to be had from the kernel: `*:443` is
+# the whole internet on the port that matters. The node refuses any other
+# spelling at startup rather than emitting a profile that cannot load.
+#   quality_gate_network:
+#     - localhost:5432   # a local database a test suite needs
+#     - "*:443"          # the whole internet on 443 — say it out loud
+quality_gate_network: []
+
+network:
+  policy: restricted
+  allowed_domains:
+    - github.com
+    - registry.npmjs.org
+
+# Lima guestでは次のように変更します。
+# node.profile: lima-trusted
+# filesystem.mode: guest-full
+# Host mount範囲はLima側のYashiki設定で制限します。

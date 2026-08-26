@@ -1,0 +1,18 @@
+{
+  "name": "@meidoya/protocol",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "description": "Control Plane API contract: scoped request/response types and the unix-socket control channel envelope.",
+  "dependencies": {
+    "zod": "^3.23.8",
+    "@meidoya/node-protocol": "workspace:*",
+    "@meidoya/domain": "workspace:*"
+  }
+}

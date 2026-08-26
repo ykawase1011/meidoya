@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # 03:17 UTC nightly. The full mutation set is ~25-40 min per shard on a
+    # hosted runner, which is too slow to sit in front of every merge.
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  secret-scan:
+    name: secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          # The semaphore tests spawn TypeScript entrypoints directly and use
+          # Node's native type stripping, just like the mutation harness.
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Audit dependencies
+        if: runner.os == 'Linux'
+        run: pnpm audit:dependencies
+
+      - run: pnpm build
+
+      - run: pnpm typecheck
+
+      - run: pnpm lint
+
+      - run: pnpm exec vitest run --maxWorkers=1 --minWorkers=1
+
+  # The mutation gate: break one guard at a time in the modules listed in
+  # tools/mutation/targets.ts and fail if the suite stays green.
+  #
+  # Cadence: the WHOLE gated set, on every pull request. 278 mutants, measured
+  # at 9m19s locally, so a hosted runner lands well inside the timeout — cheap
+  # enough that there is no reason to defer it to a nightly and let a guard with
+  # no signal merge in the meantime. The tool also supports `--changed-from` and
+  # `--shard i/n`; both exist for when the target list outgrows this budget.
+  #
+  # It is a separate job on purpose: typecheck/lint/test keep their fast
+  # feedback whatever the mutation run is doing, and this job's own isolation
+  # comes from having its own checkout — the harness edits real source files, so
+  # nothing else may share the tree with it.
+  mutation-gate:
+    name: mutation gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          # Node 22: tools/ is run through native TypeScript type stripping.
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+
+      - name: Mutate every gated guard
+        run: node tools/mutation/run.ts --json mutation-report.json
+
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mutation-report
+          path: mutation-report.json
+          if-no-files-found: ignore
+
+      # The harness restores every mutant itself, and recovers from a killed run
+      # via its journal. This is the belt-and-braces check that the job did not
+      # leave a mutation behind in a cached or reused workspace.
+      - name: The working tree must be byte-identical
+        if: always()
+        run: git diff --exit-code

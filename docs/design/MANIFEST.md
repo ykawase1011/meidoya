@@ -1,0 +1,22 @@
+# Generated files
+
+- `01-product-and-goals.md` — 3804 bytes — `77a97803773a9ef51e5476ff839ef20f04e045080cf5b0f8e958297215f73f55`
+- `02-architecture.md` — 4077 bytes — `935508b9474a7e76982ffc51a441008359b519b10db9b0a0f637af78e467c827`
+- `03-repository-boundaries.md` — 3683 bytes — `11be3fd1a453e201320e1c0a4db403d114b173a63f555399affffc82db6f170c`
+- `04-roles-and-scopes.md` — 4013 bytes — `21b62c514930fde7a3406c1a1f459c3ddc2a02286e9f77bac5bda69ddbbd5d06`
+- `05-task-lifecycle.md` — 3995 bytes — `3d43f88bdfd0bcfa5f15326145d915416d1e87d869cd6e6ecca9bba419291040`
+- `06-human-gates-and-limits.md` — 3583 bytes — `57bdd510cc0eaebc73e6c9f868358c20c6a5eaad2fc3aad59e7797fbc38e25ab`
+- `07-interaction-policy.md` — 3377 bytes — `4c4518b173003d7e2e51802b0d20d2bbe7dd39e8e2af4dc3fa27908c8d59fb43`
+- `08-temporal-and-sqlite.md` — 3755 bytes — `6767932afac3f8b466a8d5845cb3a7af41369d7c0d0da1e5b12d36bc92cd227c`
+- `09-agent-runtimes-and-model-routing.md` — 3341 bytes — `f47aaf9ddd3695c8b319bac758bc29158fe825d8f3b4ade5ce2c9ee558112753`
+- `10-execution-nodes-and-security.md` — 3461 bytes — `5e0bd8b144f96665409ed30bbe5f4967485857452005049cc300ef8829ba2e8a`
+- `11-yashiki-design.md` — 4050 bytes — `33f59e21591f058de4146e5c88dcf32db89d1aba59987808745607e8e5504cb9`
+- `12-implementation-roadmap.md` — 3716 bytes — `bd474d119b8836c515042e6d8335dd5b6a64995343a8498e64290853d329d1c2`
+- `13-hermes-fleet-migration.md` — 1951 bytes — `8d0b8f5575015ea88c723c192c8a9aa29708e28c335fc537ef708ccc4cbbef68`
+- `DESCRIPTION.md` — 2501 bytes — `bd313174f18142a508db3c9569103541fd3d64964152a725a40d78737efaeeb1`
+- `README.md` — 5387 bytes — `1a5045564d42c00109484ab8f65dabbf9c966719526af5ed377eeed1cc5a76cc`
+- `SOURCES.md` — 1985 bytes — `0cd18d18466f263e9c710f582ff64ca80e02519e21330b2466be3c630224a5e2`
+- `config.example.yaml` — 3357 bytes — `28bbee6c13afbca3ec89e43077410f09e81303500e6240da65efcf59274485b6`
+- `node.example.yaml` — 1225 bytes — `78b4c404742e3d525022356fecc1da73c511f3124992bdfeebaf6299b483ba4b`
+- `schema-outline.sql` — 5923 bytes — `37f698881885a8316daa1a423414ffba8653afba1d8f0d5b341388f19db2ae9a`
+- `workflow-policy.example.yaml` — 1606 bytes — `a8e1d275a558be6c73de84fbbf98ab49e8a60e0ba54a5ce97598af1935f015fa`

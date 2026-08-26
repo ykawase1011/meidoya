@@ -1,0 +1,20 @@
+{
+  "name": "@meidoya/node-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "description": "meidoya-node side of the Node Protocol: registration, heartbeat, run execution, concurrency.",
+  "dependencies": {
+    "zod": "^3.23.8",
+    "@meidoya/node-protocol": "workspace:*",
+    "@meidoya/domain": "workspace:*",
+    "@meidoya/protocol": "workspace:*",
+    "@meidoya/execution-native": "workspace:*"
+  }
+}

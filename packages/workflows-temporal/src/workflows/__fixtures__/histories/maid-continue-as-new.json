@@ -1,0 +1,416 @@
+{
+  "events": [
+    {
+      "eventId": "1",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 336000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_STARTED",
+      "workflowExecutionStartedEventAttributes": {
+        "workflowType": {
+          "name": "WorkspaceMaidWorkflow"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJlbnZpcm9ubWVudElkIjoiaG9tZSIsIndvcmtzcGFjZUlkIjoid29yay1yZXBsYXkiLCJwb2xpY3lSZXZpc2lvbiI6MX0="
+            }
+          ]
+        },
+        "workflowExecutionTimeout": {
+          "seconds": "315360000"
+        },
+        "workflowRunTimeout": {
+          "seconds": "315360000"
+        },
+        "workflowTaskTimeout": {
+          "seconds": "10"
+        },
+        "originalExecutionRunId": "acd3621e-9d8c-4b1c-9205-c111b1bbe3c1",
+        "identity": "69172@YMS.local",
+        "firstExecutionRunId": "acd3621e-9d8c-4b1c-9205-c111b1bbe3c1",
+        "attempt": 1,
+        "firstWorkflowTaskBackoff": {},
+        "header": {}
+      }
+    },
+    {
+      "eventId": "2",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 336000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "3",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 336000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "2",
+        "identity": "69172@YMS.local",
+        "historySizeBytes": "338"
+      }
+    },
+    {
+      "eventId": "4",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 358000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "2",
+        "identity": "69172@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+ba5702d4ee2b37572ef5e603f6b7afe45f66cb6ced6176c38f3acf36cb7a2f72",
+        "sdkMetadata": {
+          "coreUsedFlags": [
+            1,
+            3,
+            2
+          ],
+          "sdkName": "temporal-typescript",
+          "sdkVersion": "1.22.0"
+        },
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "5",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 358000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 2
+      }
+    },
+    {
+      "eventId": "6",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 358000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "5",
+        "identity": "69172@YMS.local",
+        "historySizeBytes": "597"
+      }
+    },
+    {
+      "eventId": "7",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 365000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "5",
+        "identity": "69172@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+ba5702d4ee2b37572ef5e603f6b7afe45f66cb6ced6176c38f3acf36cb7a2f72",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "8",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 365000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ACCEPTED",
+      "workflowExecutionUpdateAcceptedEventAttributes": {
+        "protocolInstanceId": "72ec2964-f443-49ae-a91c-046f74ba736e",
+        "acceptedRequestMessageId": "72ec2964-f443-49ae-a91c-046f74ba736e/request",
+        "acceptedRequestSequencingEventId": "5",
+        "acceptedRequest": {
+          "meta": {
+            "updateId": "72ec2964-f443-49ae-a91c-046f74ba736e",
+            "identity": "69172@YMS.local"
+          },
+          "input": {
+            "header": {},
+            "name": "submitMessage",
+            "args": {
+              "payloads": [
+                {
+                  "metadata": {
+                    "encoding": "anNvbi9wbGFpbg=="
+                  },
+                  "data": "eyJyZXF1ZXN0S2V5IjoicmVxLTEiLCJvcmlnaW4iOiJjaGF0IiwibWVzc2FnZVJlZiI6Im1zZzoxMjMifQ=="
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "eventId": "9",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 365000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_COMPLETED",
+      "workflowExecutionUpdateCompletedEventAttributes": {
+        "meta": {
+          "updateId": "72ec2964-f443-49ae-a91c-046f74ba736e",
+          "identity": "69172@YMS.local"
+        },
+        "outcome": {
+          "success": {
+            "payloads": [
+              {
+                "metadata": {
+                  "encoding": "anNvbi9wbGFpbg=="
+                },
+                "data": "InJlcS0xIg=="
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "eventId": "10",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 365000000
+      },
+      "eventType": "EVENT_TYPE_START_CHILD_WORKFLOW_EXECUTION_INITIATED",
+      "startChildWorkflowExecutionInitiatedEventAttributes": {
+        "namespace": "default",
+        "workflowId": "request/work-replay/req-1",
+        "workflowType": {
+          "name": "RequestWorkflow"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJlbnZpcm9ubWVudElkIjoiaG9tZSIsIndvcmtzcGFjZUlkIjoid29yay1yZXBsYXkiLCJyZXF1ZXN0S2V5IjoicmVxLTEiLCJvcmlnaW4iOiJjaGF0IiwibWVzc2FnZVJlZiI6Im1zZzoxMjMifQ=="
+            }
+          ]
+        },
+        "workflowExecutionTimeout": {},
+        "workflowRunTimeout": {},
+        "workflowTaskTimeout": {
+          "seconds": "10"
+        },
+        "parentClosePolicy": "PARENT_CLOSE_POLICY_ABANDON",
+        "workflowTaskCompletedEventId": "6",
+        "header": {},
+        "memo": {}
+      }
+    },
+    {
+      "eventId": "11",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 365000000
+      },
+      "eventType": "EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_STARTED",
+      "childWorkflowExecutionStartedEventAttributes": {
+        "namespace": "default",
+        "initiatedEventId": "10",
+        "workflowExecution": {
+          "workflowId": "request/work-replay/req-1",
+          "runId": "b3e8b6c6-d8e7-417c-bd7a-62fc207e5709"
+        },
+        "workflowType": {
+          "name": "RequestWorkflow"
+        }
+      }
+    },
+    {
+      "eventId": "12",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 365000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "13",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 366000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "12",
+        "identity": "69172@YMS.local",
+        "historySizeBytes": "1593"
+      }
+    },
+    {
+      "eventId": "14",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 373000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "12",
+        "identity": "69172@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+ba5702d4ee2b37572ef5e603f6b7afe45f66cb6ced6176c38f3acf36cb7a2f72",
+        "sdkMetadata": {},
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "15",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 373000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_SIGNALED",
+      "workflowExecutionSignaledEventAttributes": {
+        "signalName": "refreshPolicy",
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "Mg=="
+            }
+          ]
+        },
+        "identity": "69172@YMS.local"
+      }
+    },
+    {
+      "eventId": "16",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 373000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "startToCloseTimeout": {
+          "seconds": "10"
+        },
+        "attempt": 2
+      }
+    },
+    {
+      "eventId": "17",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 374000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "16",
+        "identity": "69172@YMS.local",
+        "historySizeBytes": "1901"
+      }
+    },
+    {
+      "eventId": "18",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 391000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "16",
+        "identity": "69172@YMS.local",
+        "binaryChecksum": "@temporalio/worker@1.22.0+ba5702d4ee2b37572ef5e603f6b7afe45f66cb6ced6176c38f3acf36cb7a2f72",
+        "sdkMetadata": {
+          "langUsedFlags": [
+            2
+          ]
+        },
+        "meteringMetadata": {}
+      }
+    },
+    {
+      "eventId": "19",
+      "eventTime": {
+        "seconds": "2102350479",
+        "nanos": 391000000
+      },
+      "eventType": "EVENT_TYPE_WORKFLOW_EXECUTION_CONTINUED_AS_NEW",
+      "workflowExecutionContinuedAsNewEventAttributes": {
+        "newExecutionRunId": "89b12f54-f409-4c1f-8ecd-b5cc6ddae9e5",
+        "workflowType": {
+          "name": "WorkspaceMaidWorkflow"
+        },
+        "taskQueue": {
+          "name": "meidoya/control",
+          "kind": "TASK_QUEUE_KIND_NORMAL"
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJlbnZpcm9ubWVudElkIjoiaG9tZSIsIndvcmtzcGFjZUlkIjoid29yay1yZXBsYXkiLCJwb2xpY3lSZXZpc2lvbiI6MiwibWFpbGJveCI6W10sImFjdGl2ZVJlcXVlc3RLZXlzIjpbInJlcS0xIl0sImFjdGl2ZVRhc2tJZHMiOltdLCJ0aHJlc2hvbGRzIjp7Im1heEhpc3RvcnlMZW5ndGgiOjgwMDAsIm1heEhpc3RvcnlTaXplQnl0ZXMiOjgzODg2MDgsIm1heEVsYXBzZWRNcyI6ODY0MDAwMDB9fQ=="
+            }
+          ]
+        },
+        "workflowRunTimeout": {
+          "seconds": "315360000"
+        },
+        "workflowTaskTimeout": {
+          "seconds": "10"
+        },
+        "workflowTaskCompletedEventId": "17",
+        "backoffStartInterval": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+-- 0008: FROZEN. This migration deliberately does nothing, and the repair it
+-- used to attempt is now `meidoya admin latch list` / `meidoya admin latch
+-- release`, run by a human.
+--
+-- WHAT IT USED TO DO, AND WHY THAT IS NOT A THING SQL CAN DO
+--
+-- 0005 backfilled the `signalled_at` delivery latch. The ORIGINAL 0005 put rows
+-- in the wrong bucket; the corrected one did not. Both recorded the same ledger
+-- name for a window of commits, so the name is not evidence. 0006 tried to
+-- repair the damage from the task's status at repair time, re-opened genuinely
+-- delivered answers, and was withdrawn. 0007 added `signalled_by`, real stored
+-- provenance. 0008 then tried again, keyed on that provenance plus a
+-- "positive marker" that was supposed to identify an original-0005 database
+-- from the shape of the rows it left behind.
+--
+-- The marker does not work, and no marker can, because the question it asks —
+-- "which of two historical code versions wrote this row?" — is not answerable
+-- from the rows. Three concrete ways it failed:
+--
+--   * THE ERA FENCE IS A WALL CLOCK. It compared `applied_at` of the version-5
+--     ledger row against `answered_at`, which the daemon writes from
+--     `Date.now()`. A clock that steps BACK after 0005 (NTP correction, VM
+--     snapshot restore) or that was AHEAD when 0005 ran (a container with no
+--     RTC) puts code-written rows below the boundary. Reconstructed on
+--     synthetic databases built from the historical SQL, both directions
+--     reproduce: a committed-but-undelivered answer gets latched
+--     `signalled_by = 'backfill'`, drops out of `listUndeliveredCheckpoints`
+--     forever, the sweep never retries it, and the workflow stays parked. That
+--     is precisely the loss 0005 exists to prevent.
+--
+--   * THE MARKER'S SAFETY PROOF WAS FALSE. It argued the marker could not be
+--     forged because "the column did not exist yet" — but the marker reads
+--     `COALESCE(answered_at, created_at)`, and BOTH of those columns have
+--     existed since 0001. Only `signalled_at` was new. With a backwards clock
+--     step a database that ran the CORRECTED 0005 produces marker = 1, and the
+--     destructive half then re-opens a genuinely delivered answer: verbatim the
+--     withdrawn 0006 damage, on the one database class 0008 promised it could
+--     never touch. Worse, the marker was a database-global `EXISTS`, so one
+--     anomalous row anywhere flipped the verdict for every task.
+--
+--   * IT WAS A NO-OP ON THE MOST LIKELY DAMAGED DATABASE. The marker needed a
+--     task with two or more resolved checkpoints, the older still unlatched.
+--     The canonical damaged shape — a task parked in `needs_attention` by a
+--     single `limit-exceeded` checkpoint — produces no marker at all, so it
+--     stayed broken. Whether a wedged task got repaired depended on whether
+--     some unrelated task happened to have accumulated two checkpoints.
+--
+-- WHY A MIGRATION MUST NOT MAKE THIS DECISION AT ALL
+--
+-- The evidence needed is not in the database. Whether a resolved checkpoint's
+-- answer actually reached its workflow is a fact about a Temporal workflow's
+-- history, not about these rows, and a migration runs on every boot with no
+-- operator present and no way to ask. Guessing has exactly two failure modes
+-- and both are unacceptable to do silently:
+--
+--   * guess "not delivered" wrongly and the sweep re-signals a dead workflow,
+--     two sweeps corroborate, and it reports `CheckpointAnswerDiscarded` — a
+--     false alarm on the one log line that must never cry wolf;
+--   * guess "delivered" wrongly and a committed human answer is marked
+--     delivered forever, invisible to the sweep, the task parked for good.
+--
+-- Four migrations in a row have tried to find a predicate that is right often
+-- enough. A fifth would be the same bet again. The decision needs a human who
+-- can look at the workflow, so it moved out of the boot path entirely.
+--
+-- WHAT REPLACES IT
+--
+-- `meidoya admin latch list` reports every candidate with its evidence — task
+-- id and status, checkpoint id, kind and status, answered-at, latch state and
+-- `signalled_by` provenance — and `meidoya admin latch release --checkpoint
+-- <id> --apply` clears one latch that a human has decided was never delivered.
+-- The sweep picks the row up from there, unchanged. 0007's `signalled_by` is
+-- what makes that evidence trustworthy and is kept for exactly this reason.
+--
+-- WHAT FREEZING THIS COSTS, EXPLICITLY
+--
+-- A database that ran the ORIGINAL 0005 and has a wedged answer keeps it
+-- latched until an operator runs the command. That is the pre-0008 status quo
+-- and it is recoverable by hand. Nothing is made worse: this file changed only
+-- from "sometimes repairs, sometimes destroys, verdict decided by an unrelated
+-- row" to "never touches anything".
+--
+-- WHY IT IS EMPTIED RATHER THAN DELETED OR RENUMBERED. A database that already
+-- recorded version 8 will never re-run it, so emptying it cannot disturb one;
+-- deleting it would renumber nothing but would leave the ledger's version 8
+-- unexplained, and the runner now refuses a ledger whose MAX(version) exceeds
+-- the migrations this build carries. The tombstone keeps the history readable
+-- and the numbering contiguous. (The runner's checksum guard is told, once and
+-- explicitly, that the pre-freeze hash of THIS file is a superseded release —
+-- see `migrations/index.ts`. That is a reviewed, named exception for a
+-- withdrawal, not a hole: any other divergence still fails the boot.)
