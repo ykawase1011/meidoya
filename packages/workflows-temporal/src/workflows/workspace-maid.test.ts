@@ -179,6 +179,67 @@ describe("WorkspaceMaidWorkflow", () => {
     expect(finalizations).toEqual(["completed"]);
   }, 120_000);
 
+  it("finalizes a direct Maid response without starting a task workflow", async () => {
+    if (!env) throw new Error("no test environment");
+    const workflowsPath = fileURLToPath(new URL("./index.ts", import.meta.url));
+    const finalizations: Array<{ presentation?: string; summary: string }> = [];
+    const worker = await Worker.create({
+      connection: env.nativeConnection,
+      taskQueue: CONTROL_TASK_QUEUE,
+      workflowsPath,
+      activities: {
+        async loadWorkspacePolicy() {
+          return { policy, revision: 1 };
+        },
+        async assessRequest() {
+          return {
+            type: "respond",
+            reply: {
+              summary: "こんにちは。現在進行中のタスクはありません。",
+              bullets: ["READMEの確認から始めましょうか？"],
+            },
+          };
+        },
+        async finalizeIntakeRequest(input) {
+          finalizations.push({
+            ...(input.presentation === undefined ? {} : { presentation: input.presentation }),
+            summary: input.summary,
+          });
+        },
+      } satisfies Partial<Activities>,
+    });
+
+    await worker.runUntil(
+      (async () => {
+        const handle = await env!.client.workflow.start(RequestWorkflow, {
+          taskQueue: CONTROL_TASK_QUEUE,
+          workflowId: "request-secretary-greeting",
+          args: [
+            {
+              environmentId: "home",
+              workspaceId: "work-it",
+              requestKey: "secretary-greeting",
+              origin: "chat",
+              messageRef: "msg:greeting",
+              conversationId: "conversation-greeting",
+            },
+          ],
+        });
+        await expect(handle.result()).resolves.toEqual({
+          outcome: "responded",
+          taskId: "task-secretary-greeting",
+        });
+      })(),
+    );
+
+    expect(finalizations).toEqual([
+      {
+        presentation: "reply",
+        summary: "こんにちは。現在進行中のタスクはありません。",
+      },
+    ]);
+  }, 120_000);
+
   it("keeps only ids and refs, and continues-as-new on a policy revision change", async () => {
     if (!env) throw new Error("no test environment");
     const workflowsPath = fileURLToPath(new URL("./index.ts", import.meta.url));

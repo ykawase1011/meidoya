@@ -75,6 +75,32 @@ describe("agent prompts", () => {
     expect(prompt).toContain("Interpretation mode: auto");
     expect(prompt).toContain("Default schedule timezone: Asia/Tokyo");
     expect(prompt).toContain("schedule.create");
+    expect(prompt).toContain("Selected ingress agent profile: secretary");
+    expect(prompt).toContain("maid and executive secretary");
+    expect(prompt).toContain("return respond instead of creating a task");
+  });
+
+  it("gives the secretary trusted current-work context", () => {
+    const prompt = prompts.maidAssessment(
+      {
+        workspaceId: "ws",
+        requestKey: "greeting",
+        origin: "chat",
+        messageRef: "message-1",
+        idempotencyKey: "greeting",
+      },
+      {
+        activeTaskCount: 0,
+        waitingTaskCount: 1,
+        enabledScheduleCount: 2,
+        openTasks: [{ title: "README確認", status: "waiting_user_input" }],
+      },
+    );
+
+    expect(prompt).toContain('"activeTaskCount":0');
+    expect(prompt).toContain('"waitingTaskCount":1');
+    expect(prompt).toContain("README確認");
+    expect(prompt).toContain("must not merely echo the user");
   });
 
   it("forces the dedicated CLI schedule entry into schedule interpretation", () => {

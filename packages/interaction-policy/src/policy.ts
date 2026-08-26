@@ -54,6 +54,7 @@ const TEMPLATE_KIND: Readonly<Partial<Record<DomainEventType, MessageTemplateKin
   WaitingReviewApproval: "review",
   WaitingSideEffectApproval: "approval",
   TaskNeedsAttention: "attention",
+  MaidResponded: "reply",
   TaskCompleted: "result",
   TaskFailed: "failure",
   ScheduleChanged: "schedule",

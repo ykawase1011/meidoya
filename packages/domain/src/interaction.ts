@@ -9,6 +9,7 @@ export type DomainEventType =
   | "WaitingReviewApproval"
   | "WaitingSideEffectApproval"
   | "TaskNeedsAttention"
+  | "MaidResponded"
   | "TaskCompleted"
   | "TaskFailed"
   | "ScheduleNoChange"

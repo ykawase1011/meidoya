@@ -30,6 +30,12 @@ head_maid:
       - task.delegate
       - task-summary.read
 
+# The named top-level prompt profile that receives chat/CLI requests. Model
+# vendor and strength remain explicit under model_policy.roles.maid below.
+agents:
+  maid:
+    profile: secretary
+
 workspaces:
   head-maid:
     kind: coordination

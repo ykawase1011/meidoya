@@ -175,6 +175,34 @@ describe("task.list and workspace.status.read", () => {
     expect(JSON.stringify(all.sections)).toContain("Old completed work");
     expect(JSON.stringify(all.sections)).toContain("完了・終了");
   });
+
+  it("builds a workspace-scoped secretary snapshot and excludes the current request", async () => {
+    const f = two();
+    const running = await f.createTask(WORKSPACE_A, { title: "Parser implementation" });
+    const waiting = await f.createTask(WORKSPACE_A, { title: "README approval" });
+    const greeting = await f.createTask(WORKSPACE_A, { title: "こんにちは" });
+    const confidential = await f.createTask(WORKSPACE_B, { title: "B confidential work" });
+    await f.repo.forceTaskStatus(running.taskId, "running");
+    await f.repo.forceTaskStatus(waiting.taskId, "waiting_user_input");
+    await f.repo.forceTaskStatus(confidential.taskId, "running");
+
+    const context = f.service.maidWorkspaceContext({
+      workspaceId: WORKSPACE_A,
+      taskId: greeting.taskId,
+    });
+
+    expect(context).toMatchObject({
+      activeTaskCount: 1,
+      waitingTaskCount: 1,
+      enabledScheduleCount: 0,
+    });
+    expect(context.openTasks.map((task) => task.title).sort()).toEqual([
+      "Parser implementation",
+      "README approval",
+    ]);
+    expect(JSON.stringify(context)).not.toContain("こんにちは");
+    expect(JSON.stringify(context)).not.toContain("confidential");
+  });
 });
 
 describe("single-task reads and writes", () => {

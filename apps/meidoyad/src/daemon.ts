@@ -560,6 +560,7 @@ export async function startDaemon(options: DaemonOptions): Promise<StartedDaemon
       readMessage,
       (workspaceId) => workspaceById.get(workspaceId)?.projects ?? [],
       config.timezone,
+      config.maidAgentProfile,
     ),
     policies: {
       async load(workspaceId) {
@@ -612,6 +613,7 @@ export async function startDaemon(options: DaemonOptions): Promise<StartedDaemon
             ? {}
             : { conversationId: input.conversationId }),
         }),
+      context: (input) => service.maidWorkspaceContext(input),
       materializeScheduledRequest: (input) => service.materializeScheduledRequest(input),
     },
     parse: createParsers(),

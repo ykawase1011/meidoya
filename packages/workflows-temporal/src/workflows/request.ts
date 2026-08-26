@@ -37,7 +37,7 @@ export type RequestWorkflowInput = {
 };
 
 export type RequestWorkflowResult = {
-  outcome: "administrative" | "task" | "answer" | "ask-user" | "rejected";
+  outcome: "administrative" | "responded" | "task" | "answer" | "ask-user" | "rejected";
   taskId?: TaskId;
 };
 
@@ -115,6 +115,23 @@ async function runRequestWorkflow(
   });
 
   switch (outcome.kind) {
+    case "respond":
+      if (input.delegation !== undefined) {
+        await signalDelegationFailure(input, "target Maid classified the delegation as conversation");
+        return { outcome: "rejected", taskId };
+      }
+      await notify.finalizeIntakeRequest({
+        workspaceId: input.workspaceId,
+        taskId,
+        status: "completed",
+        presentation: "reply",
+        eventId: uuid4(),
+        summary: outcome.reply.summary,
+        ...(outcome.reply.bullets === undefined ? {} : { bullets: outcome.reply.bullets }),
+        ...(input.conversationId === undefined ? {} : { conversationId: input.conversationId }),
+      });
+      return { outcome: "responded", taskId };
+
     case "administrative":
       if (input.delegation === undefined) {
         let result: AdministrativeCommandResult;

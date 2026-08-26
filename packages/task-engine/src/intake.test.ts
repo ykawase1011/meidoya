@@ -12,6 +12,7 @@ describe("maid request intake", () => {
   it("maps every decision type to a control-plane outcome", () => {
     const cases: [MaidDecision, string][] = [
       [{ type: "administrative", command: { kind: "task.list" } }, "administrative"],
+      [{ type: "respond", reply: { summary: "こんにちは。" } }, "respond"],
       [{ type: "quick", brief }, "start-task"],
       [{ type: "durable", brief }, "start-task"],
       [{ type: "answer_question", taskId: "t1", questionId: "q1", answer: "yes" }, "answer-checkpoint"],

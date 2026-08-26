@@ -29,6 +29,7 @@ export type InteractionConfig = {
   waiting_review_approval?: EventRule;
   waiting_side_effect_approval?: EventRule;
   task_needs_attention?: EventRule;
+  maid_responded?: EventRule;
   task_completed?: EventRule;
   task_failed?: EventRule;
   schedule_no_change?: EventRule;
@@ -52,6 +53,7 @@ export const EVENT_CONFIG_KEY: Readonly<Record<DomainEventType, EventConfigKey>>
   WaitingReviewApproval: "waiting_review_approval",
   WaitingSideEffectApproval: "waiting_side_effect_approval",
   TaskNeedsAttention: "task_needs_attention",
+  MaidResponded: "maid_responded",
   TaskCompleted: "task_completed",
   TaskFailed: "task_failed",
   ScheduleNoChange: "schedule_no_change",
@@ -74,6 +76,10 @@ export const DEFAULT_INTERACTION_CONFIG: Required<
   waiting_review_approval: { reactions: { add: "mag" }, messages: ["thread"] },
   waiting_side_effect_approval: { reactions: { add: "no_entry" }, messages: ["thread"] },
   task_needs_attention: { reactions: { add: "warning" }, messages: ["thread"] },
+  maid_responded: {
+    reactions: { remove: ["eyes", "question", "memo", "mag", "no_entry", "warning"] },
+    messages: ["thread"],
+  },
   task_completed: {
     reactions: {
       remove: ["eyes", "question", "memo", "mag", "no_entry", "warning"],

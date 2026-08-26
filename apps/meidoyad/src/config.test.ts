@@ -64,6 +64,7 @@ describe("control plane config", () => {
       provider: "codex",
       modelProfile: "high",
     });
+    expect(resolved.maidAgentProfile).toBe("secretary");
     expect(resolved.modelPolicy?.workerProfiles.implementer?.default).toBe("claude-standard");
   });
 

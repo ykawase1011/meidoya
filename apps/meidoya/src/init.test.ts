@@ -38,6 +38,7 @@ describe("local initialization", () => {
     expect(result.nodeId).toBe("local-mac");
     expect(readFileSync(result.configFile, "utf8")).toContain('nodes:\n  "local-mac":');
     expect(readFileSync(result.configFile, "utf8")).toContain("high: \"test-codex-model\"");
+    expect(readFileSync(result.configFile, "utf8")).toContain("profile: secretary");
     expect(readFileSync(result.nodeConfigFile, "utf8")).toContain(
       `path: ${JSON.stringify(projectPath)}`,
     );

@@ -83,6 +83,14 @@ describe("templates", () => {
     expect(result.title).toBe("完了");
     expect(result.tone).toBe("success");
     expect(result.text).not.toContain("Result");
+
+    const reply = render(
+      { kind: "reply", summary: "こんにちは。\n現在進行中のタスクはありません。" },
+      { maxChars: 200 },
+    );
+    expect(reply.title).toBeUndefined();
+    expect(reply.text).toBe("こんにちは。\n現在進行中のタスクはありません。");
+    expect(reply.tone).toBe("info");
   });
 
   it("keeps artifact links out of the scrubber's path rules", () => {
