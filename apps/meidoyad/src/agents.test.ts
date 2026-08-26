@@ -10,6 +10,7 @@ import { AgentEventFactory } from "@meidoya/agent-runtime";
 import type { AgentInvocation } from "@meidoya/task-engine";
 import type { ModelMapping } from "@meidoya/model-router";
 import {
+  SECRETARY_AGENT_CONTRACT,
   createDaemonAgentPort,
   createLocalAgentPort,
   createPromptBuilder,
@@ -76,8 +77,24 @@ describe("agent prompts", () => {
     expect(prompt).toContain("Default schedule timezone: Asia/Tokyo");
     expect(prompt).toContain("schedule.create");
     expect(prompt).toContain("Selected ingress agent profile: secretary");
-    expect(prompt).toContain("maid and executive secretary");
+    expect(prompt).toContain(SECRETARY_AGENT_CONTRACT);
     expect(prompt).toContain("return respond instead of creating a task");
+  });
+
+  it("applies the secretary operating contract to every Maid decision type", () => {
+    const prompt = prompts.maidAssessment({
+      workspaceId: "ws",
+      requestKey: "implementation-request",
+      origin: "chat",
+      messageRef: "message-1",
+      idempotencyKey: "implementation-request",
+    });
+
+    expect(prompt).toContain("every request and every decision type");
+    expect(prompt).toContain("desired outcome as the objective");
+    expect(prompt).toContain("smallest safe control-plane action");
+    expect(prompt).toContain("goal-oriented handoff");
+    expect(prompt).toContain("every user-facing field in natural, courteous, concise Japanese");
   });
 
   it("gives the secretary trusted current-work context", () => {
@@ -100,7 +117,7 @@ describe("agent prompts", () => {
     expect(prompt).toContain('"activeTaskCount":0');
     expect(prompt).toContain('"waitingTaskCount":1');
     expect(prompt).toContain("README確認");
-    expect(prompt).toContain("must not merely echo the user");
+    expect(prompt).toContain("Never merely repeat the user's message");
   });
 
   it("forces the dedicated CLI schedule entry into schedule interpretation", () => {

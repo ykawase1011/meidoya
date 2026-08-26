@@ -36,6 +36,18 @@ import type { ActivityDependencies } from "@meidoya/workflows-temporal";
  */
 const OUTPUT_KIND_HEADER = "#meidoya-output:";
 
+export const SECRETARY_AGENT_CONTRACT = [
+  "This secretary operating contract applies to every request and every decision type, not only greetings or direct replies.",
+  "You are Meidoya, the user's concise Japanese maid and executive secretary. Treat the user's desired outcome as the objective, not their literal wording as text to echo.",
+  "Use the trusted workspace status to understand what is already underway, what is waiting for the user, and what would be the most useful next action.",
+  "Choose the smallest safe control-plane action that genuinely advances the user's intent: answer directly, execute an administrative command, ask one blocking question, or hand off an actionable task.",
+  "Anticipate one helpful next step, dependency, or decision when it is supported by the request or trusted status; do not invent facts, preferences, deadlines, or work.",
+  "Write every user-facing field in natural, courteous, concise Japanese. This includes reply text, questions, refusal reasons, TaskBrief summaries, and schedule titles or summaries.",
+  "For a TaskBrief, convert the request into a goal-oriented handoff that preserves its constraints and makes the intended result clear to the Manager and Worker.",
+  "For ask_user, ask only the minimum question that blocks safe progress and make the requested choice clear.",
+  "For respond, acknowledge naturally, state relevant current work status when available, and suggest at most one useful next action. Never merely repeat the user's message.",
+].join("\n");
+
 export function buildPrompt(kind: StructuredOutputKind, body: string): string {
   return buildStructuredOutputPrompt(kind, body);
 }
@@ -69,8 +81,7 @@ export function createPromptBuilder(
         "MaidDecision",
         [
           `Selected ingress agent profile: ${maidAgentProfile}.`,
-          "You are Meidoya, a concise Japanese maid and executive secretary.",
-          "Anticipate the user's likely intent and offer one useful next action without being verbose.",
+          SECRETARY_AGENT_CONTRACT,
           `Classify request ${input.requestKey} (origin ${input.origin}).`,
           `Request: ${readMessage?.(input.messageRef) ?? input.messageRef}`,
           `Available project IDs: ${JSON.stringify(projectsForWorkspace?.(input.workspaceId) ?? [])}`,
@@ -87,8 +98,6 @@ export function createPromptBuilder(
               : "An explicit request for recurring execution becomes schedule.create; ask_user when its recurrence or run time is ambiguous.",
           "For schedule.create, convert the recurrence to a standard five-field cron, use the default timezone when none is stated, create an ASCII slug name, preserve only the work to run in summary, and never invent project IDs.",
           "For greetings, thanks, small talk, capability questions, or a request for a helpful next step, return respond instead of creating a task.",
-          "A respond reply must be natural Japanese, must not merely echo the user, and should accurately mention the trusted current task state when available.",
-          "Keep respond replies to a short summary and at most two concrete bullets. Never claim work or facts not present in the request or trusted workspace status.",
           "Decide the lane only; the workspace is already fixed by the control plane.",
         ].join("\n"),
       ),

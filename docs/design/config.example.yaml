@@ -30,8 +30,9 @@ head_maid:
       - task.delegate
       - task-summary.read
 
-# The named top-level prompt profile that receives chat/CLI requests. Model
-# vendor and strength remain explicit under model_policy.roles.maid below.
+# The named top-level prompt profile that receives chat/CLI requests. Its
+# secretary contract governs every intake decision, not only conversational
+# replies. Model vendor and strength remain explicit under model_policy below.
 agents:
   maid:
     profile: secretary
