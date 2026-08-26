@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  DISCORD_EMBED_DESCRIPTION_LIMIT,
+  DISCORD_CONTENT_LIMIT,
   SLACK_BLOCK_LIMIT,
   SLACK_SECTION_TEXT_LIMIT,
   escapeSlackText,
@@ -56,21 +56,19 @@ describe("slack rendering", () => {
 });
 
 describe("discord rendering", () => {
-  it("truncates the embed description to the platform limit", () => {
-    const body = toDiscordMessage({ text: "z".repeat(DISCORD_EMBED_DESCRIPTION_LIMIT + 500) });
-    const embed = (body["embeds"] as Array<{ description: string }>)[0];
-    expect(embed?.description.length).toBe(DISCORD_EMBED_DESCRIPTION_LIMIT);
-    expect(embed?.description.endsWith("…")).toBe(true);
+  it("truncates normal message content to the platform limit", () => {
+    const body = toDiscordMessage({ text: "z".repeat(DISCORD_CONTENT_LIMIT + 500) });
+    expect((body["content"] as string).length).toBe(DISCORD_CONTENT_LIMIT);
+    expect((body["content"] as string).endsWith("…")).toBe(true);
+    expect(body["embeds"]).toBeUndefined();
   });
 
-  it("drops link fields that would exceed the embed total budget", () => {
-    const links = Array.from({ length: 25 }, (_, i) => ({
-      label: `link-${i}`,
-      url: `https://example.invalid/${"p".repeat(900)}/${i}`,
-    }));
-    const body = toDiscordMessage({ text: "a".repeat(4000), links });
-    const embed = (body["embeds"] as Array<{ fields?: unknown[] }>)[0];
-    expect((embed?.fields ?? []).length).toBeLessThan(links.length);
+  it("renders links as copyable normal text", () => {
+    const body = toDiscordMessage({
+      text: "Result",
+      links: [{ label: "artifact", url: "https://example.invalid/a" }],
+    });
+    expect(body["content"]).toBe("Result\n\nartifact: https://example.invalid/a");
   });
 
   it("always suppresses mentions", () => {
@@ -79,21 +77,17 @@ describe("discord rendering", () => {
     });
   });
 
-  it("renders semantic results as titled, coloured embeds with fields", () => {
+  it("posts the already-rendered semantic fallback as normal text", () => {
     const body = toDiscordMessage({
-      text: "fallback",
+      text: "✅ 進行中のタスク\n\n2件です。\n\n確認待ち\n- ✋ 計画承認待ち — deploy",
       title: "進行中のタスク",
       summary: "2件です。",
       tone: "success",
       sections: [{ title: "確認待ち", bullets: ["✋ 計画承認待ち — deploy"] }],
     });
-    expect(body["embeds"]).toMatchObject([
-      {
-        title: "進行中のタスク",
-        description: "2件です。",
-        color: 0x22c55e,
-        fields: [{ name: "確認待ち", value: expect.stringContaining("計画承認待ち") }],
-      },
-    ]);
+    expect(body["content"]).toBe(
+      "✅ 進行中のタスク\n\n2件です。\n\n確認待ち\n- ✋ 計画承認待ち — deploy",
+    );
+    expect(body["embeds"]).toBeUndefined();
   });
 });
