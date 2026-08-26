@@ -7,12 +7,25 @@ import type { TransportKind } from "@meidoya/chat-core";
  */
 export interface ChatPlatformClient {
   readonly kind: TransportKind;
+  openThread(request: PlatformThreadRequest): Promise<PlatformThreadHandle>;
   sendMessage(message: PlatformOutboundMessage): Promise<PlatformMessageHandle>;
   editMessage(target: PlatformMessageTarget, body: PlatformMessageBody): Promise<void>;
   addReaction(target: PlatformMessageTarget, emoji: PlatformEmoji): Promise<void>;
   removeReaction(target: PlatformMessageTarget, emoji: PlatformEmoji): Promise<void>;
   openEventStream(handler: InboundEventHandler): Promise<PlatformEventStream>;
 }
+
+export type PlatformThreadRequest = {
+  channelRef: string;
+  messageRef: string;
+  name: string;
+  memberRef: string;
+};
+
+export type PlatformThreadHandle = {
+  channelRef: string;
+  threadRef?: string;
+};
 
 /** Already-rendered platform payload (Slack blocks / Discord normal content). */
 export type PlatformMessageBody = Record<string, unknown>;

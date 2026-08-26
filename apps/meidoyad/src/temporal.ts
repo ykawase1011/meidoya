@@ -47,6 +47,11 @@ export type CheckpointAnswerSignal = {
   text?: string;
 };
 
+export type TaskInstructionSignal = {
+  id: string;
+  text: string;
+};
+
 /** Everything the Control Plane API needs from Temporal, kept injectable. */
 export interface WorkflowGateway {
   submitRequest(workspaceId: WorkspaceId, entry: MailboxEntry): Promise<string>;
@@ -61,6 +66,11 @@ export interface WorkflowGateway {
   answerCheckpoint(
     taskId: string,
     answer: CheckpointAnswerSignal,
+    workflowId?: string,
+  ): Promise<void>;
+  addTaskInstruction(
+    taskId: string,
+    instruction: TaskInstructionSignal,
     workflowId?: string,
   ): Promise<void>;
   cancelTask(taskId: string, reason: string, workflowId?: string): Promise<void>;
@@ -199,6 +209,14 @@ export class TemporalWorkflowGateway implements WorkflowGateway {
     workflowId: string = taskWorkflowId(taskId),
   ): Promise<void> {
     await this.client.workflow.getHandle(workflowId).signal("answerCheckpoint", answer);
+  }
+
+  async addTaskInstruction(
+    taskId: string,
+    instruction: TaskInstructionSignal,
+    workflowId: string = taskWorkflowId(taskId),
+  ): Promise<void> {
+    await this.client.workflow.getHandle(workflowId).signal("addInstruction", instruction);
   }
 
   async cancelTask(

@@ -32,13 +32,14 @@ type ChannelPendingCheckpoint = PendingCheckpoint & { taskTitle: string };
 
 type ChatIngressService = Pick<
   ControlPlaneService,
-  "createTask" | "getCheckpoint" | "answerCheckpoint"
+  "createTask" | "getCheckpoint" | "answerCheckpoint" | "answerTask"
 >;
 
 type ChatIngressScopes = Pick<ScopeRegistry, "mintForBinding" | "resolve" | "projectsOf">;
 
 export type ChatIngressResult =
   | { kind: "task-created"; taskId: string; workspaceId: string }
+  | { kind: "task-instructed"; taskId: string; workspaceId: string }
   | { kind: "checkpoint-answered"; checkpointId: string; workspaceId: string }
   | { kind: "rejected"; reason: string };
 
@@ -127,6 +128,19 @@ class SqlitePendingCheckpointDirectory implements PendingCheckpointDirectory {
         };
       });
   }
+
+  latestTaskInConversation(
+    workspaceId: string,
+    conversationId: string,
+  ): { id: string; status: string } | undefined {
+    return this.repository.db
+      .prepare(
+        `SELECT id, status FROM tasks
+          WHERE workspace_id = ? AND conversation_id = ?
+          ORDER BY created_at DESC, id DESC LIMIT 1`,
+      )
+      .get(workspaceId, conversationId) as { id: string; status: string } | undefined;
+  }
 }
 
 function eventDigest(event: InboundChatEvent): string {
@@ -148,6 +162,10 @@ function titleOf(text: string): string {
     .map((line) => line.trim())
     .find((line) => line.length > 0);
   return (first ?? text.trim()).slice(0, 160);
+}
+
+function threadNameOf(text: string): string {
+  return titleOf(text).slice(0, 100);
 }
 
 function rootMessageOf(event: InboundChatEvent): MessageRef {
@@ -290,6 +308,52 @@ export function createChatIngress(options: ChatIngressOptions): ChatIngress | un
           workspaceId: answer.workspaceId,
         };
       }
+      if (answer.reason === "unknown-thread" || answer.reason === "workspace-mismatch") {
+        return { kind: "rejected", reason: answer.reason };
+      }
+      if (answer.reason === "ambiguous-checkpoint") {
+        return { kind: "rejected", reason: answer.reason };
+      }
+
+      const conversation = conversations.findByThread(inboundThreadRef(event));
+      if (conversation !== undefined && conversation.workspaceId === resolved.workspaceId) {
+        const latest = checkpoints.latestTaskInConversation(
+          resolved.workspaceId,
+          conversation.conversationId,
+        );
+        if (latest !== undefined) {
+          const digest = eventDigest(event);
+          const instructed = await options.service.answerTask(scope, {
+            taskId: latest.id,
+            questionId: `chat:${digest}`,
+            answer: text,
+          });
+          if (instructed.accepted) {
+            return {
+              kind: "task-instructed",
+              taskId: latest.id,
+              workspaceId: resolved.workspaceId,
+            };
+          }
+
+          const continued: MethodResult<"task.create"> = await options.service.createTask(scope, {
+            title: titleOf(text),
+            intent: {
+              summary: text,
+              projects: [...options.scopes.projectsOf(resolved.workspaceId)],
+              origin: "chat",
+            },
+            conversationId: conversation.conversationId,
+            parentTaskId: latest.id,
+            idempotencyKey: `chat-${digest}`,
+          });
+          return {
+            kind: "task-created",
+            taskId: continued.task.taskId,
+            workspaceId: resolved.workspaceId,
+          };
+        }
+      }
       if (directAnswer === undefined) return { kind: "rejected", reason: answer.reason };
     }
 
@@ -334,13 +398,32 @@ export function createChatIngress(options: ChatIngressOptions): ChatIngress | un
 
     const digest = eventDigest(event);
     const conversationId = `conv-chat-${digest}`;
-    await conversations.ensure({
-      conversationId,
-      workspaceId: resolved.workspaceId,
-      thread: inboundThreadRef(event),
-      rootMessage: rootMessageOf(event),
-      ingressBindingId: resolved.binding.id,
-    });
+    if (conversations.findByConversation(conversationId) === undefined) {
+      const client = options.gateway.platformClients.get(event.transport);
+      const opened =
+        client === undefined || (event.transport !== "discord" && event.transport !== "slack")
+          ? undefined
+          : await client.openThread({
+              channelRef: event.channelRef,
+              messageRef: event.messageRef,
+              name: threadNameOf(text),
+              memberRef: event.authorRef,
+            });
+      await conversations.ensure({
+        conversationId,
+        workspaceId: resolved.workspaceId,
+        thread:
+          opened === undefined
+            ? inboundThreadRef(event)
+            : {
+                transport: event.transport,
+                channelRef: opened.channelRef,
+                ...(opened.threadRef === undefined ? {} : { threadRef: opened.threadRef }),
+              },
+        rootMessage: rootMessageOf(event),
+        ingressBindingId: resolved.binding.id,
+      });
+    }
 
     const coordinationTargets =
       scope.role === "head-maid"

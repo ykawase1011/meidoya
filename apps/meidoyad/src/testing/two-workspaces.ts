@@ -168,6 +168,7 @@ export class RecordingGateway implements WorkflowGateway {
   async answerCheckpoint(taskId: string, answer: CheckpointAnswerSignal): Promise<void> {
     this.answers.push({ taskId, answer });
   }
+  async addTaskInstruction(): Promise<void> {}
   async cancelTask(): Promise<void> {}
   async createSchedule(definition: {
     workspaceId: string;

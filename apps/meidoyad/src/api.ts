@@ -532,8 +532,31 @@ export class ControlPlaneService {
     // the one call a stuck operator naturally reaches for was the one call
     // that could not unstick them. Finish the delivery instead.
     const wedged = this.#repo.latestUndeliveredCheckpointFor(task.id);
-    if (wedged !== undefined) await this.#deliver(wedged);
-    return { taskId: task.id, accepted: true };
+    if (wedged !== undefined) {
+      await this.#deliver(wedged);
+      return { taskId: task.id, accepted: true };
+    }
+    if (CLOSED_TASK_STATUSES.includes(task.status)) {
+      return { taskId: task.id, accepted: false };
+    }
+    try {
+      await this.#gateway.addTaskInstruction(
+        task.id,
+        { id: params.questionId, text: params.answer },
+        task.temporalWorkflowId,
+      );
+      return { taskId: task.id, accepted: true };
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        /workflow.*(?:not found|already (?:completed|closed)|is closed)|execution.*closed/iu.test(
+          error.message,
+        )
+      ) {
+        return { taskId: task.id, accepted: false };
+      }
+      throw error;
+    }
   }
 
   /* -------------------------------------------------------- checkpoints */

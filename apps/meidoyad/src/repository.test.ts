@@ -727,6 +727,7 @@ describe("resolveCheckpoint compare-and-swap", () => {
 
 class RecordingGateway implements WorkflowGateway {
   readonly answers: CheckpointAnswerSignal[] = [];
+  readonly instructions: Array<{ taskId: string; id: string; text: string }> = [];
   /** Number of upcoming `answerCheckpoint` calls that fail before recording. */
   failNextAnswers = 0;
   /** Error the injected failures raise (a transport error by default). */
@@ -747,6 +748,12 @@ class RecordingGateway implements WorkflowGateway {
       throw this.answerError();
     }
     this.answers.push(answer);
+  }
+  async addTaskInstruction(
+    taskId: string,
+    instruction: { id: string; text: string },
+  ): Promise<void> {
+    this.instructions.push({ taskId, ...instruction });
   }
   async cancelTask(): Promise<void> {}
   async createSchedule(): Promise<void> {}
@@ -1775,6 +1782,24 @@ describe("checkpoint answer delivery is recoverable", () => {
     // The COMMITTED answer is what gets delivered, not the text just supplied.
     expect(gateway.answers).toEqual([{ checkpointId: "cp-1", answer: "approved" }]);
     expect(signalledAt("cp-1")).not.toBeNull();
+  });
+
+  it("signals an active task when task.answer is an additional instruction", async () => {
+    await f.repo.createTask(taskInput("task-instruction"));
+    const result = await service.answerTask(scope, {
+      taskId: "task-instruction",
+      questionId: "chat:message-1",
+      answer: "失敗したテストだけ再実行してください",
+    });
+
+    expect(result).toEqual({ taskId: "task-instruction", accepted: true });
+    expect(gateway.instructions).toEqual([
+      {
+        taskId: "task-instruction",
+        id: "chat:message-1",
+        text: "失敗したテストだけ再実行してください",
+      },
+    ]);
   });
 
   /**

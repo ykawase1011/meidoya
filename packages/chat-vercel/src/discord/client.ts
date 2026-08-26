@@ -15,6 +15,8 @@ import type {
   PlatformMessageHandle,
   PlatformMessageTarget,
   PlatformOutboundMessage,
+  PlatformThreadHandle,
+  PlatformThreadRequest,
   SocketFactory,
   SocketLike,
 } from "../platform-client.js";
@@ -56,6 +58,24 @@ export class DiscordPlatformClient implements ChatPlatformClient {
     this.baseUrl = options.baseUrl ?? "https://discord.com/api/v10";
     this.fetchImpl = options.fetch ?? ((input, init) => fetch(input, init));
     this.socketFactory = options.socketFactory ?? nodeSocketFactory;
+  }
+
+  async openThread(request: PlatformThreadRequest): Promise<PlatformThreadHandle> {
+    const payload = (await this.request(
+      "POST",
+      `/channels/${request.channelRef}/messages/${request.messageRef}/threads`,
+      { name: request.name.slice(0, 100), auto_archive_duration: 1440 },
+    )) as { id?: string } | undefined;
+    const threadId = payload?.id;
+    if (typeof threadId !== "string") {
+      throw new ChatTransportError("discord thread create returned no id");
+    }
+    await this.request(
+      "PUT",
+      `/channels/${threadId}/thread-members/${request.memberRef}`,
+    );
+    this.parentCache.set(threadId, request.channelRef);
+    return { channelRef: threadId };
   }
 
   async sendMessage(message: PlatformOutboundMessage): Promise<PlatformMessageHandle> {

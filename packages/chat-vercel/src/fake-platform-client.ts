@@ -9,10 +9,13 @@ import type {
   PlatformMessageHandle,
   PlatformMessageTarget,
   PlatformOutboundMessage,
+  PlatformThreadHandle,
+  PlatformThreadRequest,
   SocketLike,
 } from "./platform-client.js";
 
 export type FakePlatformCall =
+  | { kind: "open-thread"; request: PlatformThreadRequest }
   | { kind: "send"; message: PlatformOutboundMessage }
   | { kind: "edit"; target: PlatformMessageTarget; body: PlatformMessageBody }
   | { kind: "add-reaction"; target: PlatformMessageTarget; emoji: PlatformEmoji }
@@ -25,6 +28,13 @@ export class FakePlatformClient implements ChatPlatformClient {
   private seq = 0;
 
   constructor(readonly kind: TransportKind = "slack") {}
+
+  async openThread(request: PlatformThreadRequest): Promise<PlatformThreadHandle> {
+    this.calls.push({ kind: "open-thread", request });
+    return this.kind === "discord"
+      ? { channelRef: `${request.messageRef}-thread` }
+      : { channelRef: request.channelRef, threadRef: request.messageRef };
+  }
 
   async sendMessage(message: PlatformOutboundMessage): Promise<PlatformMessageHandle> {
     this.calls.push({ kind: "send", message });

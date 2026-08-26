@@ -15,6 +15,8 @@ import type {
   PlatformMessageHandle,
   PlatformMessageTarget,
   PlatformOutboundMessage,
+  PlatformThreadHandle,
+  PlatformThreadRequest,
   SocketFactory,
   SocketLike,
 } from "../platform-client.js";
@@ -50,6 +52,10 @@ export class SlackPlatformClient implements ChatPlatformClient {
     this.baseUrl = options.baseUrl ?? "https://slack.com/api";
     this.fetchImpl = options.fetch ?? ((input, init) => fetch(input, init));
     this.socketFactory = options.socketFactory ?? nodeSocketFactory;
+  }
+
+  async openThread(request: PlatformThreadRequest): Promise<PlatformThreadHandle> {
+    return { channelRef: request.channelRef, threadRef: request.messageRef };
   }
 
   async sendMessage(message: PlatformOutboundMessage): Promise<PlatformMessageHandle> {
