@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Client } from "@temporalio/client";
+import { ScheduleOverlapPolicy, type Client } from "@temporalio/client";
 import { TemporalWorkflowGateway } from "./temporal.js";
 
 describe("TemporalWorkflowGateway execution-node routing", () => {
@@ -40,5 +40,31 @@ describe("TemporalWorkflowGateway execution-node routing", () => {
         },
       },
     ]);
+  });
+
+  it("injects the configured node into Temporal schedule actions", async () => {
+    const creates: unknown[] = [];
+    const client = {
+      workflow: {},
+      schedule: {
+        create: async (options: unknown) => {
+          creates.push(options);
+          return {};
+        },
+      },
+    } as unknown as Client;
+    const gateway = new TemporalWorkflowGateway(client, "personal", () => "mac-meidoya");
+
+    await gateway.createSchedule({
+      workspaceId: "workspace",
+      environmentId: "personal",
+      name: "usage",
+      spec: { kind: "cron", expressions: ["*/10 * * * *"], timezone: "Asia/Tokyo" },
+      overlap: ScheduleOverlapPolicy.SKIP,
+      messageRef: "schedule:usage",
+    });
+
+    const action = (creates[0] as { action: { args: [{ executionNodeId?: string }] } }).action;
+    expect(action.args[0].executionNodeId).toBe("mac-meidoya");
   });
 });

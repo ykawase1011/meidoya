@@ -210,7 +210,10 @@ export class TemporalWorkflowGateway implements WorkflowGateway {
   }
 
   async createSchedule(definition: MeidoyaScheduleDefinition): Promise<void> {
-    await this.#schedules.create(definition);
+    const executionNodeId = this.executionNodeForWorkspace?.(definition.workspaceId);
+    await this.#schedules.create(
+      executionNodeId === undefined ? definition : { ...definition, executionNodeId },
+    );
   }
 
   async pauseSchedule(workspaceId: WorkspaceId, name: string): Promise<void> {

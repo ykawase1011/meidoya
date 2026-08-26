@@ -355,6 +355,111 @@ describe("chat ingress", () => {
     await test.close();
   });
 
+  it("routes an approval reply to a status message when one channel checkpoint is pending", async () => {
+    const test = await rig();
+    await test.gateway.conversations?.ensure({
+      conversationId: "conv-pending-task",
+      workspaceId: WORKSPACE,
+      ingressBindingId: `discord:${WORKSPACE}`,
+      thread: { transport: "discord", channelRef: "D_WORK", threadRef: "pending-root" },
+    });
+    await test.repository.createTask({
+      taskId: "task-pending-operation",
+      workspaceId: WORKSPACE,
+      conversationId: "conv-pending-task",
+      origin: "chat",
+      pipeline: "coding",
+      title: "利用量を定期更新",
+      intent: { summary: "利用量を定期更新", projects: ["grammarxiv"], origin: "chat" },
+      temporalWorkflowId: "task/task-pending-operation",
+      now: Date.now(),
+    });
+    await test.repository.recordCheckpoint({
+      id: "cp_pending_operation",
+      taskId: "task-pending-operation",
+      kind: "side-effect-approval",
+      status: "pending",
+      prompt: "Discordへ定期投稿してよいですか？",
+      choices: [],
+      version: 1,
+    });
+    await test.gateway.conversations?.ensure({
+      conversationId: "conv-status-query",
+      workspaceId: WORKSPACE,
+      ingressBindingId: `discord:${WORKSPACE}`,
+      thread: { transport: "discord", channelRef: "D_WORK", threadRef: "status-root" },
+    });
+    test.gateway.conversations?.registerMessageAlias("conv-status-query", {
+      transport: "discord",
+      channelRef: "D_WORK",
+      messageRef: "bot-status-message",
+    });
+
+    const result = await test.ingress.handle(
+      discordEvent({
+        messageRef: "approval-reply",
+        threadRef: "bot-status-message",
+        text: "Approve",
+      }),
+    );
+
+    expect(result).toEqual({
+      kind: "checkpoint-answered",
+      checkpointId: "cp_pending_operation",
+      workspaceId: WORKSPACE,
+    });
+    expect(test.answerCheckpoint.mock.calls[0]?.[1]).toEqual({
+      checkpointId: "cp_pending_operation",
+      decision: "approve",
+      expectedVersion: 1,
+    });
+    expect(test.createTask).not.toHaveBeenCalled();
+    expect(test.discord.callsOfKind("send")[0]?.message.body["content"]).toBe(
+      "✅ タスク「利用量を定期更新」への回答を受け付けました。",
+    );
+    await test.close();
+  });
+
+  it.each(["承認したい", "オッケーです"])(
+    "accepts %s as approval when one channel checkpoint is pending",
+    async (text) => {
+      const test = await rig();
+      await test.gateway.conversations?.ensure({
+        conversationId: "conv-approval-phrase",
+        workspaceId: WORKSPACE,
+        ingressBindingId: `discord:${WORKSPACE}`,
+        thread: { transport: "discord", channelRef: "D_WORK", threadRef: "approval-root" },
+      });
+      await test.repository.createTask({
+        taskId: "task-approval-phrase",
+        workspaceId: WORKSPACE,
+        conversationId: "conv-approval-phrase",
+        origin: "chat",
+        pipeline: "coding",
+        title: "外部操作",
+        intent: { summary: "外部操作", projects: ["grammarxiv"], origin: "chat" },
+        temporalWorkflowId: "task/task-approval-phrase",
+        now: Date.now(),
+      });
+      await test.repository.recordCheckpoint({
+        id: "cp_approval_phrase",
+        taskId: "task-approval-phrase",
+        kind: "side-effect-approval",
+        status: "pending",
+        prompt: "実行しますか？",
+        choices: [],
+        version: 1,
+      });
+
+      await expect(
+        test.ingress.handle(discordEvent({ messageRef: `approval-${text}`, text })),
+      ).resolves.toMatchObject({ kind: "checkpoint-answered", checkpointId: "cp_approval_phrase" });
+      expect(test.answerCheckpoint.mock.calls[0]?.[1]).toMatchObject({ decision: "approve" });
+      expect(test.createTask).not.toHaveBeenCalled();
+      await test.close();
+    },
+  );
+
   it("lists task names instead of guessing when a direct approval is ambiguous", async () => {
     const test = await rig();
     const addPending = async (suffix: string, title: string): Promise<void> => {
