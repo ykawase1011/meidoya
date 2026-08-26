@@ -218,7 +218,9 @@ describe("a completed task announces its own completion", () => {
 
     const posted = rig.transport.callsOfKind("post-thread-message");
     expect(posted).toHaveLength(1);
+    expect(posted[0]?.message.text).toContain("✅ タスク「Fix the parser」が完了しました");
     expect(posted[0]?.message.text).toContain("Fixed the parser");
+    expect(posted[0]?.message.text).not.toContain(TASK_ID);
     expect(posted[0]?.ref.threadRef).toBe(TASK_ID);
     expect(listAll(rig.db).every((row) => row.status === "sent")).toBe(true);
 

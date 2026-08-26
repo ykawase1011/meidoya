@@ -209,7 +209,9 @@ describe("activities", () => {
           activeTaskCount: 0,
           waitingTaskCount: 1,
           enabledScheduleCount: 2,
-          openTasks: [{ title: "README確認", status: "waiting_user_input" }],
+          openTasks: [
+            { taskId: "task-readme", title: "README確認", status: "waiting_user_input" },
+          ],
         };
       },
       async materializeScheduledRequest() {
@@ -388,7 +390,7 @@ describe("activities", () => {
   });
 
   it("refuses completion when a condition is unmet and completes when they hold", async () => {
-    const { activities, repository } = setup();
+    const { activities, repository, deps } = setup();
     const rejected = await activities.completeTask({
       taskId: "t1",
       workspaceId: "ws1",
@@ -435,6 +437,10 @@ describe("activities", () => {
     expect(completed.status).toBe("completed");
     expect(repository.tasks.get("t1")?.status).toBe("completed");
     expect(repository.outbox).toHaveLength(1);
+    expect((deps.interactionPolicy as FakeInteractionPolicy).events.at(-1)?.payload).toMatchObject({
+      title: "タスク「t」が完了しました",
+      summary: "done",
+    });
   });
   /**
    * Regression guard for the capability threading. `runWorkerStep` used to send

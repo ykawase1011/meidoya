@@ -95,6 +95,9 @@ describe("agent prompts", () => {
     expect(prompt).toContain("smallest safe control-plane action");
     expect(prompt).toContain("goal-oriented handoff");
     expect(prompt).toContain("every user-facing field in natural, courteous, concise Japanese");
+    expect(prompt).toContain("Never use role-play honorifics");
+    expect(prompt).toContain("ご主人様");
+    expect(prompt).toContain("never expose them");
   });
 
   it("gives the secretary trusted current-work context", () => {
@@ -110,13 +113,16 @@ describe("agent prompts", () => {
         activeTaskCount: 0,
         waitingTaskCount: 1,
         enabledScheduleCount: 2,
-        openTasks: [{ title: "README確認", status: "waiting_user_input" }],
+        openTasks: [
+          { taskId: "task-readme", title: "README確認", status: "waiting_user_input" },
+        ],
       },
     );
 
     expect(prompt).toContain('"activeTaskCount":0');
     expect(prompt).toContain('"waitingTaskCount":1');
     expect(prompt).toContain("README確認");
+    expect(prompt).toContain("task-readme");
     expect(prompt).toContain("Never merely repeat the user's message");
   });
 

@@ -161,6 +161,11 @@ async function runRequestWorkflow(
           workspaceId: input.workspaceId,
           taskId,
           status: "completed",
+          ...(outcome.command.kind === "task.list" ||
+          outcome.command.kind === "task.get" ||
+          outcome.command.kind === "schedule.list"
+            ? { presentation: "reply" as const }
+            : {}),
           eventId: uuid4(),
           ...result,
           ...(input.conversationId === undefined
