@@ -39,6 +39,16 @@ const IngressChannelSchema = z.object({
   profile: z.string().optional(),
 });
 
+const AgentProfilesSchema = z
+  .object({
+    maid: z
+      .object({
+        profile: z.literal("secretary").default("secretary"),
+      })
+      .default({}),
+  })
+  .default({});
+
 const WorkspaceConfigSchema = z.object({
   display_name: z.string().optional(),
   kind: z.enum(["execution", "coordination"]).default("execution"),
@@ -169,6 +179,7 @@ export const ControlPlaneConfigSchema = z.object({
       grants: z.record(z.array(DelegationCapabilitySchema)).default({}),
     })
     .optional(),
+  agents: AgentProfilesSchema,
   workspaces: z.record(WorkspaceConfigSchema),
   nodes: z.record(NodePolicyConfigSchema).default({}),
   models: z.unknown().optional(),
@@ -286,6 +297,8 @@ export type ResolvedControlPlaneConfig = {
   modelMapping: ModelMapping | undefined;
   /** Validated logical routing policy; absent retains the documented defaults. */
   modelPolicy: ModelPolicy | undefined;
+  /** Named prompt profile used by the top-level ingress Maid. */
+  maidAgentProfile: "secretary";
   headMaid:
     | {
         enabled: boolean;
@@ -509,6 +522,7 @@ export function resolveControlPlaneConfig(
     interaction: config.interaction as InteractionConfig | undefined,
     modelMapping: parseModelMapping(config.models),
     modelPolicy: parseConfiguredModelPolicy(config.model_policy),
+    maidAgentProfile: config.agents.maid.profile,
     headMaid:
       config.head_maid === undefined
         ? undefined

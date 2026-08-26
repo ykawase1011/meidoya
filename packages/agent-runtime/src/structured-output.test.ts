@@ -53,6 +53,15 @@ describe("schemas match the domain types", () => {
     };
 
     expect(MaidDecisionSchema.parse(maid)).toEqual(maid);
+    expect(
+      MaidDecisionSchema.parse({
+        type: "respond",
+        reply: { summary: "こんにちは。", bullets: ["次のご用件を承ります。"] },
+      }),
+    ).toEqual({
+      type: "respond",
+      reply: { summary: "こんにちは。", bullets: ["次のご用件を承ります。"] },
+    });
     expect(ExecutionPlanSchema.parse(plan)).toEqual(plan);
     expect(ManagerDecisionSchema.parse(manager)).toEqual(manager);
     expect(WorkerResultSchema.parse(worker)).toEqual(worker);
@@ -65,6 +74,11 @@ describe("schemas match the domain types", () => {
   it("rejects unknown variants and wrong shapes", () => {
     expect(MaidDecisionSchema.safeParse({ type: "nope" }).success).toBe(false);
     expect(WorkerResultSchema.safeParse({ type: "failed", errorClass: "x" }).success).toBe(false);
+  });
+
+  it("documents the direct secretary response variant", () => {
+    const prompt = buildStructuredOutputPrompt("MaidDecision", "Greet the user.");
+    expect(prompt).toContain('"type":"respond"');
   });
 
   it("accepts a complete natural-language schedule command with safe defaults", () => {

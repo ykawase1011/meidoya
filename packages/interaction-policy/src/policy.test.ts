@@ -42,6 +42,7 @@ describe("default event matrix (07 section 2)", () => {
     ["WaitingReviewApproval", ["mag"], 1],
     ["WaitingSideEffectApproval", ["no_entry"], 1],
     ["TaskNeedsAttention", ["warning"], 1],
+    ["MaidResponded", [], 1],
     ["TaskCompleted", ["white_check_mark"], 1],
     ["TaskFailed", ["warning"], 1],
     ["ScheduleNoChange", [], 0],
@@ -62,6 +63,19 @@ describe("default event matrix (07 section 2)", () => {
     const firstAdd = intents.findIndex((i) => i.action === "add-reaction");
     const lastRemove = intents.map((i) => i.action).lastIndexOf("remove-reaction");
     expect(lastRemove).toBeLessThan(firstAdd);
+  });
+
+  it("MaidResponded clears progress without adding a completion reaction", () => {
+    const intents = decideOutboxIntents(
+      event("MaidResponded", { summary: "こんにちは。" }),
+      CONFIG,
+    );
+    expect(reactions(intents, "remove-reaction")).toContain("eyes");
+    expect(reactions(intents, "add-reaction")).toEqual([]);
+    const [message] = messageIntents(intents);
+    expect(message?.action === "post-thread-message" ? message.message.text : "").toBe(
+      "こんにちは。",
+    );
   });
 
   it("ScheduleChanged posts one result message", () => {

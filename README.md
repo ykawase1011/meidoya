@@ -140,6 +140,10 @@ When `models:` is configured, `meidoyad` starts Codex and Claude runtimes for th
 Head Maid, Maid and Manager roles. `model_policy:` selects those coordinating
 roles and the default/allowed Worker and reviewer profiles; Worker and reviewer
 runs execute on the selected execution node, with review limited to `repo.read`.
+`agents.maid.profile: secretary` explicitly selects the top-level ingress persona.
+That Maid answers greetings and short conversational requests directly, using a
+trusted snapshot of active/waiting tasks and schedules; it does not create a
+Worker task just to echo the user's message.
 The vendor binaries default to `codex` and `claude` on `PATH`; override them with
 `MEIDOYA_CODEX_BIN` or `MEIDOYA_CLAUDE_BIN`. Coordinating runs are bounded to 14
 minutes by default; set `MEIDOYA_CONTROL_AGENT_TIMEOUT_MS` to a positive integer

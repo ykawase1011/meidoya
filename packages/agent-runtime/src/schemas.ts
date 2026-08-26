@@ -47,8 +47,16 @@ const TaskBriefSchema = z.object({
   origin: z.enum(["chat", "cli", "schedule", "delegation", "agent"]),
 });
 
+const MaidReplySchema = z
+  .object({
+    summary: z.string().min(1).max(3_000),
+    bullets: z.array(z.string().min(1).max(500)).max(5).optional(),
+  })
+  .strict();
+
 export const MaidDecisionSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("administrative"), command: AdminCommandSchema }),
+  z.object({ type: z.literal("respond"), reply: MaidReplySchema }).strict(),
   z.object({ type: z.literal("quick"), brief: TaskBriefSchema }),
   z.object({ type: z.literal("durable"), brief: TaskBriefSchema }),
   z.object({

@@ -1,6 +1,7 @@
 import type {
   AdminCommand,
   MaidDecision,
+  MaidReply,
   PipelineName,
   TaskBrief,
   TaskId,
@@ -18,6 +19,7 @@ export type IntakeContext = {
 
 export type IntakeOutcome =
   | { kind: "administrative"; command: AdminCommand }
+  | { kind: "respond"; reply: MaidReply }
   | { kind: "start-task"; lane: TaskLane; pipeline: PipelineName; brief: TaskBrief }
   | { kind: "answer-checkpoint"; taskId: TaskId; questionId: string; answer: string }
   | { kind: "ask-user"; question: string }
@@ -38,6 +40,8 @@ export function handleMaidDecision(decision: MaidDecision, ctx: IntakeContext): 
   switch (decision.type) {
     case "administrative":
       return { kind: "administrative", command: decision.command };
+    case "respond":
+      return { kind: "respond", reply: decision.reply };
     case "quick":
       return { kind: "start-task", lane: "quick", pipeline: "quick", brief: decision.brief };
     case "durable":

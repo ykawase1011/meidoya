@@ -24,6 +24,7 @@ const OUTPUT_CONTRACTS: Record<StructuredOutputKind, string> = {
     'Use task.list view "open" for ordinary questions about current/in-progress tasks, "waiting" for human/action waits, "closed" for finished tasks, and "all" only when explicitly requested.',
     '- {"type":"administrative","command":{"kind":"task.get|task.cancel|schedule.list|schedule.pause|schedule.resume", ...required id}}',
     '- {"type":"administrative","command":{"kind":"schedule.create","name":"ascii-slug","cron":"five-field cron","timezone":"IANA timezone","title":"...","summary":"work to run","projects":["project-id"],"delivery":"always|on-change","overlap":"skip|buffer-one|allow","enabled":true}}',
+    '- {"type":"respond","reply":{"summary":"concise user-facing reply","bullets":["optional next action"]}}',
     '- {"type":"quick|durable","brief":{"summary":"...","projects":["project-id"],"origin":"chat|cli|schedule|delegation|agent"}}',
     '- {"type":"answer_question","taskId":"...","questionId":"...","answer":"..."}',
     '- {"type":"ask_user","question":"..."}',

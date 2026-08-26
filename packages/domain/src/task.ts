@@ -54,8 +54,14 @@ export type TaskBrief = {
   origin: TaskOrigin;
 };
 
+export type MaidReply = {
+  summary: string;
+  bullets?: string[];
+};
+
 export type MaidDecision =
   | { type: "administrative"; command: AdminCommand }
+  | { type: "respond"; reply: MaidReply }
   | { type: "quick"; brief: TaskBrief }
   | { type: "durable"; brief: TaskBrief }
   | { type: "answer_question"; taskId: TaskId; questionId: string; answer: string }

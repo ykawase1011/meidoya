@@ -948,6 +948,30 @@ export class ControlPlaneService {
     }
   }
 
+  maidWorkspaceContext(input: { workspaceId: string; taskId: string }): {
+    activeTaskCount: number;
+    waitingTaskCount: number;
+    enabledScheduleCount: number;
+    openTasks: Array<{ title: string; status: TaskStatus }>;
+  } {
+    const tasks = this.#repo
+      .listTasks(input.workspaceId, {
+        status: [...ACTIVE_TASK_STATUSES, ...WAITING_TASK_STATUSES],
+        limit: 1_000,
+      })
+      .filter((task) => task.id !== input.taskId);
+    const active = new Set<TaskStatus>(ACTIVE_TASK_STATUSES);
+    const waiting = new Set<TaskStatus>(WAITING_TASK_STATUSES);
+    return {
+      activeTaskCount: tasks.filter((task) => active.has(task.status)).length,
+      waitingTaskCount: tasks.filter((task) => waiting.has(task.status)).length,
+      enabledScheduleCount: this.#scheduleRows(input.workspaceId).filter(
+        (schedule) => schedule.enabled,
+      ).length,
+      openTasks: tasks.slice(0, 5).map((task) => ({ title: task.title, status: task.status })),
+    };
+  }
+
   async materializeScheduledRequest(input: {
     workspaceId: string;
     requestKey: string;

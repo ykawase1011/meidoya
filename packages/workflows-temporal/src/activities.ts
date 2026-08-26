@@ -79,6 +79,13 @@ export type AssessRequestInput = {
   idempotencyKey: string;
 };
 
+export type MaidWorkspaceContext = {
+  activeTaskCount: number;
+  waitingTaskCount: number;
+  enabledScheduleCount: number;
+  openTasks: Array<{ title: string; status: TaskStatus }>;
+};
+
 export type PlanTaskInput = {
   taskId: TaskId;
   workspaceId: WorkspaceId;
@@ -332,6 +339,7 @@ export type FinalizeIntakeRequestInput = AdministrativeCommandResult & {
   status: "completed" | "failed";
   eventId: string;
   conversationId?: string;
+  presentation?: "result" | "reply";
 };
 
 export type MaterializeScheduledRequestInput = {
@@ -387,7 +395,7 @@ export type PromptBuilder = {
   worker(input: WorkerStepInput): string;
   review(input: ReviewInput): string;
   managerDecision(input: ManagerDecisionInput): string;
-  maidAssessment(input: AssessRequestInput): string;
+  maidAssessment(input: AssessRequestInput, context?: MaidWorkspaceContext): string;
 };
 
 /**
@@ -427,6 +435,10 @@ export type ActivityDependencies = {
   };
   administration?: {
     execute(input: AdministrativeCommandInput): Promise<AdministrativeCommandResult>;
+    context?(input: {
+      workspaceId: WorkspaceId;
+      taskId: TaskId;
+    }): Promise<MaidWorkspaceContext> | MaidWorkspaceContext;
     materializeScheduledRequest(
       input: MaterializeScheduledRequestInput,
     ): Promise<MaterializeScheduledRequestOutput>;
@@ -531,6 +543,10 @@ export function createActivities(deps: ActivityDependencies): Activities {
 
     async assessRequest(input) {
       const runtime = roleRuntime(input.workspaceId, "maid");
+      const context = await deps.administration?.context?.({
+        workspaceId: input.workspaceId,
+        taskId: `task-${input.requestKey}`,
+      });
       const output = await invokeAgent({
         runId: deps.ids.next("run"),
         taskId: input.requestKey,
@@ -538,7 +554,7 @@ export function createActivities(deps: ActivityDependencies): Activities {
         provider: runtime.provider,
         modelProfile: runtime.modelProfile,
         scope: { workspaceId: input.workspaceId, projectAccess: [], capabilities: [] },
-        prompt: deps.prompts.maidAssessment(input),
+        prompt: deps.prompts.maidAssessment(input, context),
         idempotencyKey: input.idempotencyKey,
       });
       const decision = deps.parse.maidDecision(output);
@@ -579,7 +595,12 @@ export function createActivities(deps: ActivityDependencies): Activities {
         id: input.eventId,
         taskId: input.taskId,
         workspaceId: input.workspaceId,
-        type: input.status === "completed" ? ("TaskCompleted" as const) : ("TaskFailed" as const),
+        type:
+          input.status === "completed"
+            ? input.presentation === "reply"
+              ? ("MaidResponded" as const)
+              : ("TaskCompleted" as const)
+            : ("TaskFailed" as const),
         payload: {
           ...(input.title === undefined ? {} : { title: input.title }),
           summary: input.summary,
@@ -602,7 +623,7 @@ export function createActivities(deps: ActivityDependencies): Activities {
         await tx.appendTaskEvent({
           taskId: input.taskId,
           eventType: event.type,
-          idempotencyKey: `administrative:${input.taskId}:${input.status}`,
+          idempotencyKey: `intake:${input.taskId}:${event.type}`,
           payload: event.payload,
         });
         for (const intent of intents) await tx.enqueueNotification(intent);

@@ -61,15 +61,22 @@ export function createPromptBuilder(
   readMessage?: (ref: string) => string | undefined,
   projectsForWorkspace?: (workspaceId: string) => readonly string[],
   defaultTimezone: string = "UTC",
+  maidAgentProfile: "secretary" = "secretary",
 ): ActivityDependencies["prompts"] {
   return {
-    maidAssessment: (input) =>
+    maidAssessment: (input, context) =>
       buildPrompt(
         "MaidDecision",
         [
+          `Selected ingress agent profile: ${maidAgentProfile}.`,
+          "You are Meidoya, a concise Japanese maid and executive secretary.",
+          "Anticipate the user's likely intent and offer one useful next action without being verbose.",
           `Classify request ${input.requestKey} (origin ${input.origin}).`,
           `Request: ${readMessage?.(input.messageRef) ?? input.messageRef}`,
           `Available project IDs: ${JSON.stringify(projectsForWorkspace?.(input.workspaceId) ?? [])}`,
+          context === undefined
+            ? "Trusted workspace status: unavailable. Do not invent task or schedule counts."
+            : `Trusted workspace status: ${JSON.stringify(context)}`,
           `Interpretation mode: ${input.interpretation ?? "auto"}.`,
           `Default schedule timezone: ${defaultTimezone}.`,
           `Preserve origin ${input.origin} in any TaskBrief and use only available project IDs.`,
@@ -79,6 +86,9 @@ export function createPromptBuilder(
               ? "This request must become schedule.create; use ask_user only when its recurrence or run time is ambiguous."
               : "An explicit request for recurring execution becomes schedule.create; ask_user when its recurrence or run time is ambiguous.",
           "For schedule.create, convert the recurrence to a standard five-field cron, use the default timezone when none is stated, create an ASCII slug name, preserve only the work to run in summary, and never invent project IDs.",
+          "For greetings, thanks, small talk, capability questions, or a request for a helpful next step, return respond instead of creating a task.",
+          "A respond reply must be natural Japanese, must not merely echo the user, and should accurately mention the trusted current task state when available.",
+          "Keep respond replies to a short summary and at most two concrete bullets. Never claim work or facts not present in the request or trusted workspace status.",
           "Decide the lane only; the workspace is already fixed by the control plane.",
         ].join("\n"),
       ),

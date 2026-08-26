@@ -10,6 +10,7 @@ export type MessageTemplateKind =
   | "review"
   | "approval"
   | "attention"
+  | "reply"
   | "result"
   | "failure"
   | "schedule";
@@ -82,6 +83,7 @@ const HEADINGS: Readonly<Record<MessageTemplateKind, string>> = {
   review: "レビューの確認",
   approval: "承認が必要です",
   attention: "対応が必要です",
+  reply: "Meidoya",
   result: "完了",
   failure: "失敗",
   schedule: "定期実行",
@@ -93,6 +95,7 @@ const ICONS: Readonly<Record<MessageTemplateKind, string>> = {
   review: "🔎",
   approval: "⛔",
   attention: "⚠️",
+  reply: "",
   result: "✅",
   failure: "❌",
   schedule: "🗓️",
@@ -104,6 +107,7 @@ const TONES: Readonly<Record<MessageTemplateKind, MessageTone>> = {
   review: "info",
   approval: "warning",
   attention: "warning",
+  reply: "info",
   result: "success",
   failure: "danger",
   schedule: "info",
@@ -129,13 +133,16 @@ function cleanSections(
 
 /** Applies the template, scrubs, then truncates. Never posts raw output. */
 export function render(input: RenderInput, options: RendererOptions): RenderedMessage {
-  const title = scrub(input.title ?? HEADINGS[input.kind]);
+  const title =
+    input.kind === "reply" && input.title === undefined
+      ? undefined
+      : scrub(input.title ?? HEADINGS[input.kind]);
   const summary = input.summary === undefined ? undefined : scrub(input.summary);
   const bullets = cleanList(input.bullets);
   const sections = cleanSections(input.sections);
   const choices = cleanList(input.choices);
   const lines: string[] = [];
-  lines.push(`${ICONS[input.kind]} ${title}`);
+  if (title !== undefined) lines.push(`${ICONS[input.kind]} ${title}`.trim());
   if (summary !== undefined) lines.push("", summary);
   if (bullets !== undefined) {
     lines.push("");
@@ -150,14 +157,14 @@ export function render(input: RenderInput, options: RendererOptions): RenderedMe
     for (const choice of choices) lines.push(`[${choice}]`);
   }
 
-  const text = truncate(lines.join("\n"), options.maxChars);
+  const text = truncate(lines.join("\n").trimStart(), options.maxChars);
   const links = (input.links ?? []).map((l) => ({
     label: scrub(l.label),
     url: l.url,
   }));
   return {
     text,
-    title,
+    ...(title === undefined ? {} : { title }),
     tone: TONES[input.kind],
     ...(summary === undefined ? {} : { summary }),
     ...(bullets === undefined ? {} : { bullets }),

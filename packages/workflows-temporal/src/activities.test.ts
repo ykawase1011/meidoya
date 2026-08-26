@@ -168,6 +168,66 @@ describe("activities", () => {
     expect(repository.outbox).toHaveLength(1);
   });
 
+  it("publishes a direct Maid reply without presenting it as task completion", async () => {
+    const { activities, repository, deps } = setup();
+    repository.tasks.set("reply-1", {
+      ...task,
+      id: "reply-1",
+      status: "received",
+      version: 0,
+    });
+
+    await activities.finalizeIntakeRequest({
+      workspaceId: "ws1",
+      taskId: "reply-1",
+      status: "completed",
+      presentation: "reply",
+      eventId: "event-reply",
+      summary: "こんにちは。現在進行中のタスクはありません。",
+    });
+
+    expect(repository.tasks.get("reply-1")?.status).toBe("completed");
+    expect(repository.events.at(-1)?.eventType).toBe("MaidResponded");
+    expect((deps.interactionPolicy as FakeInteractionPolicy).events.at(-1)?.type).toBe(
+      "MaidResponded",
+    );
+  });
+
+  it("loads trusted workspace context before invoking the Maid", async () => {
+    const { activities, deps } = setup();
+    let promptContext: unknown;
+    deps.prompts.maidAssessment = (_input, context) => {
+      promptContext = context;
+      return "assess";
+    };
+    deps.administration = {
+      async execute() {
+        return { summary: "unused" };
+      },
+      context() {
+        return {
+          activeTaskCount: 0,
+          waitingTaskCount: 1,
+          enabledScheduleCount: 2,
+          openTasks: [{ title: "README確認", status: "waiting_user_input" }],
+        };
+      },
+      async materializeScheduledRequest() {
+        return { taskId: "unused", pipeline: "scheduled" };
+      },
+    };
+
+    await activities.assessRequest({
+      workspaceId: "ws1",
+      requestKey: "request-1",
+      origin: "chat",
+      messageRef: "event-1",
+      idempotencyKey: "assess-1",
+    });
+
+    expect(promptContext).toMatchObject({ waitingTaskCount: 1, enabledScheduleCount: 2 });
+  });
+
   it("rejects Maid-selected projects outside the configured workspace", async () => {
     const { activities, deps } = setup();
     deps.workspaceProjects = () => ["parser"];

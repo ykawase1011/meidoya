@@ -108,6 +108,10 @@ control_plane:
     namespace: default
     control_task_queue: meidoya/control
 
+agents:
+  maid:
+    profile: secretary
+
 workspaces:
   ${yamlString(input.workspaceId)}:
     ingress:
