@@ -94,6 +94,10 @@ async function rig() {
     status: params.decision === "approve" ? ("approved" as const) : ("answered" as const),
     version: params.expectedVersion + 1,
   }));
+  const answerTask = vi.fn(async (_scope, params) => ({
+    taskId: params.taskId,
+    accepted: true,
+  }));
   const service = {
     createTask,
     getCheckpoint: (_scope: unknown, checkpointId: string) => {
@@ -102,6 +106,7 @@ async function rig() {
       return checkpoint;
     },
     answerCheckpoint,
+    answerTask,
   } as ChatIngressOptions["service"];
   const scopes = {
     mintForBinding: (binding) => ({
@@ -126,6 +131,7 @@ async function rig() {
     ingress,
     createTask,
     answerCheckpoint,
+    answerTask,
     async close() {
       await ingress.stop();
       await queue.close();
@@ -157,6 +163,103 @@ describe("chat ingress", () => {
     );
     const rows = test.db.prepare("SELECT COUNT(*) AS n FROM conversations").get() as { n: number };
     expect(rows.n).toBe(2);
+    expect(test.slack.callsOfKind("open-thread")).toHaveLength(1);
+    expect(test.discord.callsOfKind("open-thread")).toEqual([
+      {
+        kind: "open-thread",
+        request: {
+          channelRef: "D_WORK",
+          messageRef: "discord-root",
+          name: "Run the repository tests",
+          memberRef: "U_HUMAN",
+        },
+      },
+    ]);
+    await test.close();
+  });
+
+  it("routes a Discord thread reply into the task that owns the thread", async () => {
+    const test = await rig();
+    await test.gateway.conversations?.ensure({
+      conversationId: "conv-discord-thread",
+      workspaceId: WORKSPACE,
+      ingressBindingId: `discord:${WORKSPACE}`,
+      thread: { transport: "discord", channelRef: "discord-root-thread" },
+    });
+    await test.repository.createTask({
+      taskId: "task-discord-thread",
+      workspaceId: WORKSPACE,
+      conversationId: "conv-discord-thread",
+      origin: "chat",
+      pipeline: "coding",
+      title: "Run tests",
+      intent: { summary: "Run tests", projects: ["grammarxiv"], origin: "chat" },
+      temporalWorkflowId: "task/task-discord-thread",
+      now: Date.now(),
+    });
+
+    const result = await test.ingress.handle(
+      discordEvent({
+        channelRef: "discord-root-thread",
+        parentChannelRef: "D_WORK",
+        messageRef: "discord-follow-up",
+        threadRef: "discord-root-thread",
+        text: "失敗したテストだけ再実行してください",
+      }),
+    );
+
+    expect(result).toEqual({
+      kind: "task-instructed",
+      taskId: "task-discord-thread",
+      workspaceId: WORKSPACE,
+    });
+    expect(test.answerTask.mock.calls[0]?.[1]).toMatchObject({
+      taskId: "task-discord-thread",
+      answer: "失敗したテストだけ再実行してください",
+      questionId: expect.stringMatching(/^chat:/u),
+    });
+    expect(test.createTask).not.toHaveBeenCalled();
+    await test.close();
+  });
+
+  it("creates a continuation in the same conversation after the previous task closes", async () => {
+    const test = await rig();
+    test.answerTask.mockResolvedValueOnce({ taskId: "task-completed", accepted: false });
+    await test.gateway.conversations?.ensure({
+      conversationId: "conv-completed-thread",
+      workspaceId: WORKSPACE,
+      ingressBindingId: `discord:${WORKSPACE}`,
+      thread: { transport: "discord", channelRef: "completed-thread" },
+    });
+    await test.repository.createTask({
+      taskId: "task-completed",
+      workspaceId: WORKSPACE,
+      conversationId: "conv-completed-thread",
+      origin: "chat",
+      pipeline: "coding",
+      title: "Initial request",
+      intent: { summary: "Initial request", projects: ["grammarxiv"], origin: "chat" },
+      temporalWorkflowId: "task/task-completed",
+      now: Date.now(),
+    });
+    await test.repository.forceTaskStatus("task-completed", "completed");
+
+    const result = await test.ingress.handle(
+      discordEvent({
+        channelRef: "completed-thread",
+        parentChannelRef: "D_WORK",
+        messageRef: "continuation-message",
+        threadRef: "completed-thread",
+        text: "続けてREADMEも更新してください",
+      }),
+    );
+
+    expect(result.kind).toBe("task-created");
+    expect(test.createTask.mock.calls[0]?.[1]).toMatchObject({
+      conversationId: "conv-completed-thread",
+      parentTaskId: "task-completed",
+      intent: { summary: "続けてREADMEも更新してください" },
+    });
     await test.close();
   });
 

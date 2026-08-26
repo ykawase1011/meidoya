@@ -66,6 +66,26 @@ describe("SlackTransport", () => {
   });
 });
 
+describe("SlackPlatformClient threads", () => {
+  it("uses the root message as Slack's native thread without an API call", async () => {
+    const fetch = vi.fn<FetchLike>();
+    const client = new SlackPlatformClient({ botToken: DUMMY_BOT_TOKEN, fetch });
+
+    await expect(
+      client.openThread({
+        channelRef: "C_GRAMMARXIV",
+        messageRef: "1700000000.000100",
+        name: "READMEを確認する",
+        memberRef: "U_HUMAN",
+      }),
+    ).resolves.toEqual({
+      channelRef: "C_GRAMMARXIV",
+      threadRef: "1700000000.000100",
+    });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
 describe("SlackPlatformClient rate limiting", () => {
   it("surfaces a retryable error with Retry-After on HTTP 429", async () => {
     const fetchImpl: FetchLike = async () =>

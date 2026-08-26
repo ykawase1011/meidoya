@@ -92,6 +92,45 @@ describe("DiscordTransport", () => {
   });
 });
 
+describe("DiscordPlatformClient threads", () => {
+  it("creates a real thread from the root message and adds its author", async () => {
+    const requests: Array<{ url: string; method?: string; body?: unknown }> = [];
+    const client = new DiscordPlatformClient({
+      botToken: DUMMY_BOT_TOKEN,
+      fetch: async (url, init) => {
+        requests.push({
+          url,
+          ...(init?.method === undefined ? {} : { method: init.method }),
+          ...(init?.body === undefined ? {} : { body: JSON.parse(String(init.body)) }),
+        });
+        return url.endsWith("/threads")
+          ? jsonResponse({ id: "999999999999999999" })
+          : new Response(null, { status: 204 });
+      },
+    });
+
+    await expect(
+      client.openThread({
+        channelRef: "000000000000000000",
+        messageRef: "111111111111111111",
+        name: "READMEを確認する",
+        memberRef: "333333333333333333",
+      }),
+    ).resolves.toEqual({ channelRef: "999999999999999999" });
+    expect(requests).toEqual([
+      {
+        url: "https://discord.com/api/v10/channels/000000000000000000/messages/111111111111111111/threads",
+        method: "POST",
+        body: { name: "READMEを確認する", auto_archive_duration: 1440 },
+      },
+      {
+        url: "https://discord.com/api/v10/channels/999999999999999999/thread-members/333333333333333333",
+        method: "PUT",
+      },
+    ]);
+  });
+});
+
 describe("DiscordPlatformClient rate limiting", () => {
   it("surfaces retry_after from the 429 body", async () => {
     const fetchImpl: FetchLike = async () =>

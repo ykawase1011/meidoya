@@ -29,6 +29,7 @@ import { CONTROL_TASK_QUEUE, nodeTaskQueue } from "../task-queues.js";
 import { taskWorkflowId } from "../workflow-ids.js";
 import {
   TaskWorkflow,
+  taskAddInstructionSignal,
   taskAnswerCheckpointSignal,
   taskSnapshotQuery,
   type TaskSnapshot,
@@ -480,6 +481,54 @@ async function waitForStatus(
 }
 
 describe("TaskWorkflow", () => {
+  it("reruns the same task with an instruction received during execution", async () => {
+    const log = newLog();
+    const ungatedPolicy: WorkspacePolicy = {
+      ...policy,
+      humanGates: {
+        clarification: "never",
+        plan: "never",
+        review: "never",
+        sideEffect: "policy",
+      },
+    };
+    const activities = makeActivities(log, {
+      policy: ungatedPolicy,
+      effectiveGates: ungatedPolicy.humanGates,
+      workerDelayMs: 250,
+    });
+    const workflowInput: TaskWorkflowInput = {
+      ...input,
+      taskId: "t-thread-instruction-1",
+      policy: ungatedPolicy,
+    };
+
+    await withWorkers(activities, async (client) => {
+      const handle = await client.workflow.start(TaskWorkflow, {
+        taskQueue: CONTROL_TASK_QUEUE,
+        workflowId: taskWorkflowId(workflowInput.taskId),
+        args: [workflowInput],
+      });
+      for (let count = 0; count < 200 && log.workerSteps.length === 0; count += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+      expect(log.workerSteps).toHaveLength(1);
+
+      await handle.signal(taskAddInstructionSignal, {
+        id: "chat:discord-follow-up",
+        text: "失敗したテストだけ再実行してください",
+      });
+      await handle.query(taskSnapshotQuery);
+
+      const result = await handle.result();
+      expect(result.status).toBe("completed");
+      expect(log.workerSteps.length).toBeGreaterThanOrEqual(2);
+      expect(log.workerSteps.at(-1)?.brief.summary).toContain(
+        "失敗したテストだけ再実行してください",
+      );
+    });
+  }, 120_000);
+
   /**
    * A parked task must never be observable without the id of what parked it.
    *

@@ -111,7 +111,13 @@ export type CheckpointAnswer = {
   text?: string;
 };
 
+export type TaskInstruction = {
+  id: string;
+  text: string;
+};
+
 export const taskAnswerCheckpointSignal = defineSignal<[CheckpointAnswer]>("answerCheckpoint");
+export const taskAddInstructionSignal = defineSignal<[TaskInstruction]>("addInstruction");
 export const taskCancelTaskSignal = defineSignal<[string]>("cancelTask");
 export const taskRefreshPolicySignal = defineSignal<[WorkspacePolicy]>("refreshPolicy");
 
@@ -267,6 +273,10 @@ export async function runTaskWorkflow(
   let cancelReason: string | undefined;
   let pendingCheckpointId: string | undefined;
   const answers: CheckpointAnswer[] = [];
+  const instructions: TaskInstruction[] = [];
+  const instructionIds = new Set<string>();
+  let instructionRevision = 0;
+  let appliedInstructionRevision = 0;
   let eventSequence = 0;
   let attempt = 0;
   let loop: ReviewLoopState = { reviewRounds: 0, fixRounds: 0, fingerprints: [] };
@@ -334,6 +344,18 @@ export async function runTaskWorkflow(
   setHandler(taskAnswerCheckpointSignal, (incoming) => {
     recordCheckpointAnswer(answers, incoming);
   });
+  setHandler(taskAddInstructionSignal, (incoming) => {
+    const id = incoming.id.trim();
+    const text = incoming.text.trim();
+    if (id.length === 0 || text.length === 0 || instructionIds.has(id)) return;
+    instructionIds.add(id);
+    instructions.push({ id, text: text.slice(0, 1000) });
+    if (instructions.length > 32) {
+      const removed = instructions.shift();
+      if (removed !== undefined) instructionIds.delete(removed.id);
+    }
+    instructionRevision += 1;
+  });
   setHandler(taskSnapshotQuery, () => {
     const snapshot: TaskSnapshot = {
       status: machine.status,
@@ -372,6 +394,15 @@ export async function runTaskWorkflow(
     });
     taskVersion = recorded.version;
     return recorded.applied;
+  };
+
+  const currentBrief = (): TaskBrief => {
+    if (instructions.length === 0) return input.brief;
+    const additions = instructions.slice(-8).map((instruction) => `- ${instruction.text}`);
+    return {
+      ...input.brief,
+      summary: `${input.brief.summary}\n\n追加指示:\n${additions.join("\n")}`,
+    };
   };
 
   const emit = async (type: string, payload: Record<string, unknown>): Promise<void> => {
@@ -601,7 +632,7 @@ export async function runTaskWorkflow(
         const planInput: PlanTaskInput = {
           taskId: input.taskId,
           workspaceId: input.workspaceId,
-          brief: input.brief,
+          brief: currentBrief(),
           stepKey: step.key,
           attempt,
           idempotencyKey: agentRunKey(input.taskId, step.key, attempt),
@@ -813,7 +844,7 @@ export async function runTaskWorkflow(
           findings = await reviewer.runReview({
             taskId: input.taskId,
             workspaceId: input.workspaceId,
-            brief: input.brief,
+            brief: currentBrief(),
             stepKey: step.key,
             attempt,
             provider: reviewRouting.runtime.provider,
@@ -915,10 +946,11 @@ export async function runTaskWorkflow(
               runtime: { provider: "codex" as const, modelProfile: "standard" as const },
               allowedRuntimes: [{ provider: "codex" as const, modelProfile: "standard" as const }],
             };
+        const workerInstructionRevision = instructionRevision;
         const result = await worker.runWorkerStep({
           taskId: input.taskId,
           workspaceId: input.workspaceId,
-          brief: input.brief,
+          brief: currentBrief(),
           stepKey: step.key,
           stepKind: step.kind,
           attempt,
@@ -936,6 +968,10 @@ export async function runTaskWorkflow(
           ...(executionPlan === undefined ? {} : { executionPlan }),
           idempotencyKey: agentRunKey(input.taskId, step.key, attempt),
         });
+        appliedInstructionRevision = Math.max(
+          appliedInstructionRevision,
+          workerInstructionRevision,
+        );
         if (result.type === "completed") {
           taskSummary = result.summary;
           return "success";
@@ -1073,98 +1109,116 @@ export async function runTaskWorkflow(
 
   await moveTo("planning", { eventType: "TaskStarted" });
 
-  let stepKey: string | undefined = getPipeline(machine.pipeline).entry;
+  let stepKey: string | undefined;
   let halted = false;
 
-  while (stepKey !== undefined && !halted) {
-    if (cancelReason !== undefined) break;
-    const pipeline = getPipeline(machine.pipeline);
-    const step: PipelineStep | undefined = pipeline.steps[stepKey];
-    if (!step) {
-      await pause("unknown-step", `pipeline ${pipeline.name} has no step ${stepKey}`);
-      break;
-    }
-    if (machine.status !== step.status) {
-      await moveTo(step.status, { stepKey: step.key });
-    } else {
-      machine = { ...machine, currentStepKey: step.key };
-    }
+  for (;;) {
+    stepKey = getPipeline(machine.pipeline).entry;
+    halted = false;
+    while (stepKey !== undefined && !halted) {
+      if (cancelReason !== undefined) break;
+      const pipeline = getPipeline(machine.pipeline);
+      const step: PipelineStep | undefined = pipeline.steps[stepKey];
+      if (!step) {
+        await pause("unknown-step", `pipeline ${pipeline.name} has no step ${stepKey}`);
+        break;
+      }
+      if (machine.status !== step.status) {
+        await moveTo(step.status, { stepKey: step.key });
+      } else {
+        machine = { ...machine, currentStepKey: step.key };
+      }
 
-    // Pre-step gates. Plan approval is evaluated after the plan exists and
-    // review approval before completion; every other declared gate stops here.
-    if (
-      step.gate !== undefined &&
-      !(step.gate === "plan-approval" && (step.kind === "plan" || step.kind === "assess")) &&
-      !(step.gate === "review-approval" && step.kind === "review")
-    ) {
-      const context: GateContext =
-        step.gate === "review-approval" ? { hasFindings: hasFindings() } : {};
-      const proceeded = await runGate(
-        step.gate,
-        `工程「${step.kind}」を実行してよいか確認してください。`,
-        context,
-      );
-      if (!proceeded) {
+      // Pre-step gates. Plan approval is evaluated after the plan exists and
+      // review approval before completion; every other declared gate stops here.
+      if (
+        step.gate !== undefined &&
+        !(step.gate === "plan-approval" && (step.kind === "plan" || step.kind === "assess")) &&
+        !(step.gate === "review-approval" && step.kind === "review")
+      ) {
+        const context: GateContext =
+          step.gate === "review-approval" ? { hasFindings: hasFindings() } : {};
+        const proceeded = await runGate(
+          step.gate,
+          `工程「${step.kind}」を実行してよいか確認してください。`,
+          context,
+        );
+        if (!proceeded) {
+          halted = true;
+          break;
+        }
+        if (cancelReason !== undefined) break;
+      }
+
+      let outcome: PipelineOutcome | "halt";
+      /**
+       * A step whose ACTIVITY fails is a stop, not a retry.
+       *
+       * Temporal has already applied the activity's own retry policy by the time
+       * the failure reaches here; a refusal (`PolicyViolation`, `ScopeViolation`)
+       * is non-retryable, so it arrives on the first attempt. Letting it escape
+       * this function failed the workflow, which the daemon then re-dispatched —
+       * the same refusal logged over and over with no human ever asked. The task
+       * pauses into `needs_attention` with the reason instead, which is the one
+       * state an operator can act on.
+       *
+       * Cancellation is not a failure and is re-raised: a cancelled workflow must
+       * not go on issuing commands.
+       */
+      try {
+        outcome = await runStep(step);
+      } catch (error) {
+        if (isCancellation(error)) throw error;
+        await pause("step-failed", `step ${step.key} could not run: ${failureMessage(error)}`);
         halted = true;
         break;
       }
-      if (cancelReason !== undefined) break;
-    }
+      if (outcome === "halt") {
+        halted = true;
+        break;
+      }
 
-    /**
-     * A step whose ACTIVITY fails is a stop, not a retry.
-     *
-     * Temporal has already applied the activity's own retry policy by the time
-     * the failure reaches here; a refusal (`PolicyViolation`, `ScopeViolation`)
-     * is non-retryable, so it arrives on the first attempt. Letting it escape
-     * this function failed the workflow, which the daemon then re-dispatched —
-     * the same refusal logged over and over with no human ever asked. The task
-     * pauses into `needs_attention` with the reason instead, which is the one
-     * state an operator can act on.
-     *
-     * Cancellation is not a failure and is re-raised: a cancelled workflow must
-     * not go on issuing commands.
-     */
-    let outcome: PipelineOutcome | "halt";
-    try {
-      outcome = await runStep(step);
-    } catch (error) {
-      if (isCancellation(error)) throw error;
-      await pause("step-failed", `step ${step.key} could not run: ${failureMessage(error)}`);
-      halted = true;
-      break;
-    }
-    if (outcome === "halt") {
-      halted = true;
-      break;
-    }
+      // The step's own verdict, recorded by the control plane: the completion
+      // check has no other way to know a control-plane step ever ran.
+      await db.recordStepOutcome({
+        taskId: input.taskId,
+        stepKey: step.key,
+        stepKind: step.kind,
+        status: outcome === "success" || outcome === "no-change" ? "succeeded" : "failed",
+      });
 
-    // The step's own verdict, recorded by the control plane: the completion
-    // check has no other way to know a control-plane step ever ran.
-    await db.recordStepOutcome({
-      taskId: input.taskId,
-      stepKey: step.key,
-      stepKind: step.kind,
-      status: outcome === "success" || outcome === "no-change" ? "succeeded" : "failed",
-    });
+      if (machine.pipeline !== pipeline.name) {
+        // Promoted mid-step: continue in the durable pipeline from its entry.
+        stepKey = getPipeline(machine.pipeline).entry;
+        continue;
+      }
 
-    if (machine.pipeline !== pipeline.name) {
-      // Promoted mid-step: continue in the durable pipeline from its entry.
-      stepKey = getPipeline(machine.pipeline).entry;
+      const advance = advancePipeline(pipeline, step.key, outcome);
+      if (advance.kind === "stuck") {
+        await pause("pipeline-stuck", advance.reason);
+        halted = true;
+        break;
+      }
+      if (advance.kind === "complete") {
+        stepKey = undefined;
+        break;
+      }
+      stepKey = advance.step.key;
+    }
+    if (
+      cancelReason === undefined &&
+      !halted &&
+      instructionRevision > appliedInstructionRevision
+    ) {
+      loop = { reviewRounds: 0, fixRounds: 0, fingerprints: [] };
+      verification = undefined;
+      findings = undefined;
+      reviewGateSatisfied = false;
+      reviewGateWaived = false;
+      await moveTo("planning", { eventType: "TaskInstructionAccepted" });
       continue;
     }
-
-    const advance = advancePipeline(pipeline, step.key, outcome);
-    if (advance.kind === "stuck") {
-      await pause("pipeline-stuck", advance.reason);
-      halted = true;
-      break;
-    }
-    if (advance.kind === "complete") {
-      stepKey = undefined;
-      break;
-    }
-    stepKey = advance.step.key;
+    break;
   }
 
   if (cancelReason !== undefined) {

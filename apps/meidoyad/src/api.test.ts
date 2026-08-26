@@ -101,6 +101,7 @@ class FakeGateway implements WorkflowGateway {
     return "head-maid/test-env";
   }
   async answerCheckpoint(): Promise<void> {}
+  async addTaskInstruction(): Promise<void> {}
   async cancelTask(): Promise<void> {}
   async createSchedule(): Promise<void> {}
   async pauseSchedule(): Promise<void> {}

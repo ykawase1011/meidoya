@@ -1,9 +1,16 @@
 # Slack・Discord受信の設定
 
 MeidoyaはSlack Socket ModeとDiscord Gatewayを同時に起動できます。チャンネルの
-ルート投稿は新規タスクになり、既存タスクのスレッド／返信は未回答checkpointへの
-回答になります。Workspaceは本文ではなく、設定済みのaccountとchannelだけで
-fail-closedに決定されます。
+ルート投稿は新規タスクになり、以後の会話はその投稿に対応するスレッドへ集約されます。
+Workspaceは本文ではなく、設定済みのaccountとchannelだけでfail-closedに決定されます。
+
+- Discordはルート投稿から実スレッドを作成し、投稿者をメンバーへ追加して返信する。
+- Slackはルート投稿をそのままnative threadの起点として返信する。チャンネル参加者は
+  通常のSlack権限でスレッドを閲覧できるため、個別の招待APIは使わない。
+- スレッド内の返信は、確認待ちならcheckpointへの回答、実行中なら同じTaskへの
+  追加指示として扱う。
+- 直前のTaskが完了・失敗・キャンセル済みなら、同じConversation内に親子関係を持つ
+  継続Taskを作る。別スレッドや無関係な新規Taskへは混ぜない。
 
 ## 1. Workspace binding
 
@@ -52,7 +59,8 @@ SlackはSocket Modeを有効化し、`connections:write`を持つApp-level token
 `chat:write`、履歴参照、reaction操作に必要な権限を付与します。
 
 DiscordはDeveloper PortalでMessage Content Intentを有効にし、対象チャンネルで
-View Channel、Send Messages、Read Message History、Add ReactionsをBotへ許可します。
+View Channel、Send Messages、Read Message History、Add Reactions、Create Public Threads、
+Send Messages in ThreadsをBotへ許可します。
 
 ## 3. 起動と確認
 
@@ -76,7 +84,8 @@ Dockerを使わずTemporal CLIを別ターミナルの`127.0.0.1:7233`で起動�
 切断時は指数backoffで自動再接続します。認証不足やSocket Mode未設定は
 `could not start ... ingress`としてstderrへ出ます。
 
-1. 対象チャンネルへ新しいルート投稿を送る。
+1. 対象チャンネルへ新しいルート投稿を送る。Discordでは投稿から新しいスレッドが
+   作られ、投稿者が参加済みになることを確認する。Slackでは投稿のthreadを開く。
 2. `pnpm meidoya task list --limit 20`で`origin=chat`のタスクを確認する。
 3. Discordではcheckpoint通知の`承認`／`回答・指示を入力`／`キャンセル`ボタンを
    使う。`回答・指示を入力`はモーダルを開き、自由入力を元の確認へ返す。
@@ -87,6 +96,8 @@ Dockerを使わずTemporal CLIを別ターミナルの`127.0.0.1:7233`で起動�
 5. clarificationには確認メッセージへの任意の返信、またはチャンネル直下の
    `回答: <内容>`を使う。確認待ちが複数ある場合は、Meidoyaがタスク名を表示して
    対象メッセージへの返信を求め、推測では処理しない。
+6. 作業中のスレッドへ追加指示を送り、新しいTaskが増えず同じTaskが再計画されることを
+   確認する。完了後に同じスレッドへ追加依頼した場合は、同じConversation内の継続Taskになる。
 
 同じSlack envelopeやDiscord messageが再配送されても、platform message ID由来の
 idempotency keyで同じタスクへ収束します。
