@@ -24,7 +24,7 @@ import type { ScopeRegistry } from "./scope.js";
 import type { ChatGateway } from "./chat-gateway.js";
 
 const APPROVAL_KINDS = new Set(["plan-approval", "review-approval", "side-effect-approval"]);
-const APPROVE = /^(?:a|approve|approved|ok|yes|承認|了承|はい)(?:します|でお願いします)?[.!。！]?$/iu;
+const APPROVE = /^(?:(?:a|approve|approved|ok|yes|承認|了承|了解)(?:します|したい|でお願いします)?|(?:はい|オッケー)(?:です|でお願いします)?)[.!。！]?$/iu;
 const REJECT = /^(?:r|reject|rejected|no|却下|拒否|いいえ|キャンセル)(?:します)?[.!。！]?$/iu;
 const PREFIXED_ANSWER = /^(?:回答|指示)[:：]\s*(.+)$/u;
 
@@ -271,26 +271,28 @@ export function createChatIngress(options: ChatIngressOptions): ChatIngress | un
     const scope = scopeFor(options.scopes, resolved.binding);
     if (scope === undefined) return { kind: "rejected", reason: "scope-unavailable" };
 
+    const directAnswer = directCheckpointAnswer(text);
     const isReply = event.threadRef !== undefined || event.parentChannelRef !== undefined;
     if (isReply) {
       const answer = resolveInboundReply(
         { ingress, conversations, checkpoints },
         event,
       );
-      if (!answer.ok) return { kind: "rejected", reason: answer.reason };
-      const checkpoint = options.service.getCheckpoint(scope, answer.checkpointId);
-      const result: MethodResult<"checkpoint.answer"> = await options.service.answerCheckpoint(
-        scope,
-        checkpointParams(checkpoint, answer.answer),
-      );
-      return {
-        kind: "checkpoint-answered",
-        checkpointId: result.checkpointId,
-        workspaceId: answer.workspaceId,
-      };
+      if (answer.ok) {
+        const checkpoint = options.service.getCheckpoint(scope, answer.checkpointId);
+        const result: MethodResult<"checkpoint.answer"> = await options.service.answerCheckpoint(
+          scope,
+          checkpointParams(checkpoint, answer.answer),
+        );
+        return {
+          kind: "checkpoint-answered",
+          checkpointId: result.checkpointId,
+          workspaceId: answer.workspaceId,
+        };
+      }
+      if (directAnswer === undefined) return { kind: "rejected", reason: answer.reason };
     }
 
-    const directAnswer = directCheckpointAnswer(text);
     if (directAnswer !== undefined) {
       const pending = checkpoints.listPendingInChannel(resolved.workspaceId, event);
       if (pending.length === 0) {

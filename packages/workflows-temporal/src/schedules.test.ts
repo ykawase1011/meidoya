@@ -36,11 +36,18 @@ describe("temporal schedules", () => {
     expect(options.action.workflowType).toBe("RequestWorkflow");
     expect(options.action.taskQueue).toBe(CONTROL_TASK_QUEUE);
     const args = options.action.args as [
-      { origin: string; workspaceId: string; requestKey: string },
+      { origin: string; workspaceId: string; requestKey: string; executionNodeId?: string },
     ];
     expect(args[0].origin).toBe("schedule");
     expect(args[0].workspaceId).toBe("work-it");
     expect(args[0].requestKey).toBe("daily-digest");
+  });
+
+  it("carries the control-plane-selected execution node into scheduled requests", () => {
+    const options = buildScheduleOptions(definition({ executionNodeId: "mac-meidoya" }));
+    if (options.action.type !== "startWorkflow") return;
+    const args = options.action.args as [{ executionNodeId?: string }];
+    expect(args[0].executionNodeId).toBe("mac-meidoya");
   });
 
   it("delegates overlap policy and pause state to Temporal", () => {

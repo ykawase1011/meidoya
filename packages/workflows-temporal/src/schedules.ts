@@ -20,6 +20,7 @@ export type MeidoyaScheduleSpec =
 export type MeidoyaScheduleDefinition = {
   workspaceId: WorkspaceId;
   environmentId: string;
+  executionNodeId?: string;
   name: string;
   spec: MeidoyaScheduleSpec;
   /** Skip, buffer or cancel a still-running previous run — delegated to Temporal. */
@@ -45,6 +46,9 @@ export function buildScheduleOptions(
       requestKey: definition.name,
       origin: "schedule",
       messageRef: definition.messageRef,
+      ...(definition.executionNodeId === undefined
+        ? {}
+        : { executionNodeId: definition.executionNodeId }),
       ...(definition.conversationId !== undefined
         ? { conversationId: definition.conversationId }
         : {}),
