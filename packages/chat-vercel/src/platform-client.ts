@@ -14,7 +14,7 @@ export interface ChatPlatformClient {
   openEventStream(handler: InboundEventHandler): Promise<PlatformEventStream>;
 }
 
-/** Already-rendered platform payload (Slack blocks / Discord embeds). */
+/** Already-rendered platform payload (Slack blocks / Discord normal content). */
 export type PlatformMessageBody = Record<string, unknown>;
 
 export type PlatformOutboundMessage = {

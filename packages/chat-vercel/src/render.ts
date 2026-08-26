@@ -12,15 +12,6 @@ export const SLACK_TEXT_LIMIT = 40_000;
 export const SLACK_BLOCK_LIMIT = 50;
 
 export const DISCORD_CONTENT_LIMIT = 2000;
-export const DISCORD_EMBED_DESCRIPTION_LIMIT = 4096;
-export const DISCORD_EMBED_TOTAL_LIMIT = 6000;
-
-const DISCORD_COLORS = {
-  info: 0x3b82f6,
-  success: 0x22c55e,
-  warning: 0xf59e0b,
-  danger: 0xef4444,
-} as const;
 
 function truncate(text: string, limit: number): string {
   if (text.length <= limit) return text;
@@ -137,63 +128,11 @@ export function toSlackMessage(message: RenderedMessage): PlatformMessageBody {
 }
 
 export function toDiscordMessage(message: RenderedMessage): PlatformMessageBody {
-  const structured =
-    message.title !== undefined ||
-    message.summary !== undefined ||
-    message.bullets !== undefined ||
-    message.sections !== undefined ||
-    message.choices !== undefined;
-  const body = [
-    message.summary,
-    message.bullets?.map((item) => `• ${item}`).join("\n"),
-  ]
-    .filter((part): part is string => part !== undefined && part.length > 0)
-    .join("\n\n");
-  const description = truncate(
-    structured ? body : message.text,
-    DISCORD_EMBED_DESCRIPTION_LIMIT,
-  );
-  const links = message.links ?? [];
-
-  const fields = (message.sections ?? []).map((section) => ({
-    name: truncate(section.title, 256),
-    value: truncate(section.bullets.map((item) => `• ${item}`).join("\n"), 1024),
-    inline: false,
-  }));
-  if (message.choices !== undefined && message.choices.length > 0) {
-    fields.push({
-      name: "返信方法",
-      value: truncate(message.choices.map((choice) => `\`${choice}\``).join(" / "), 1024),
-      inline: false,
-    });
-  }
-  fields.push(...links.map((link) => ({
-    name: truncate(link.label, 256),
-    value: truncate(link.url, 1024),
-    inline: false,
-  })));
-
-  const candidates = fields.slice(0, 25);
-  let total = description.length + (message.title?.length ?? 0);
-  const kept: typeof fields = [];
-  for (const field of candidates) {
-    const cost = field.name.length + field.value.length;
-    if (total + cost > DISCORD_EMBED_TOTAL_LIMIT) break;
-    total += cost;
-    kept.push(field);
-  }
-
-  const embed: Record<string, unknown> = {};
-  if (message.title !== undefined) embed["title"] = truncate(message.title, 256);
-  if (description.length > 0) embed["description"] = description;
-  if (message.tone !== undefined) embed["color"] = DISCORD_COLORS[message.tone];
-  if (kept.length > 0) embed["fields"] = kept;
+  const links = (message.links ?? []).map((link) => `${link.label}: ${link.url}`);
+  const content = truncate([message.text, ...links].filter((part) => part.length > 0).join("\n\n"), DISCORD_CONTENT_LIMIT);
 
   return {
-    // Empty content keeps the whole body inside the embed; mass mentions are
-    // suppressed unconditionally so rendered text can never ping a channel.
-    content: "",
-    embeds: [embed],
+    content,
     allowed_mentions: { parse: [] },
   };
 }
