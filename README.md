@@ -47,7 +47,7 @@ Slack Socket ModeとDiscord Gatewayの同時受信、token file、Bot権限、He
 安全な切替は
 [`docs/operations/chat-ingress-ja.md`](./docs/operations/chat-ingress-ja.md)を参照してください。
 「進行中のタスクは？」などの自然言語一覧、状態ごとの意味、状態が変わるタイミング、
-Slack Block Kit／Discord Embedの返答形式は
+Slack Block Kit／Discordのコピー可能な通常テキスト返答は
 [`docs/operations/task-status-ja.md`](./docs/operations/task-status-ja.md)にまとめています。
 public化前の全履歴secret scan、Actionsログ／artifact、commit email、履歴分離の確認は
 [`docs/operations/public-release-ja.md`](./docs/operations/public-release-ja.md)を参照してください。

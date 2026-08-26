@@ -85,7 +85,7 @@ Dockerを使わずTemporal CLIを別ターミナルの`127.0.0.1:7233`で起動�
 同じSlack envelopeやDiscord messageが再配送されても、platform message ID由来の
 idempotency keyで同じタスクへ収束します。
 
-返答はSlackではBlock Kit、DiscordではEmbedへ整形されます。自然言語のTask一覧と
+返答はSlackではBlock Kit、Discordではコピー可能な通常テキストへ整形されます。自然言語のTask一覧と
 状態遷移の詳細は[`task-status-ja.md`](./task-status-ja.md)を参照してください。
 
 ## 4. Hermesからの一時切替

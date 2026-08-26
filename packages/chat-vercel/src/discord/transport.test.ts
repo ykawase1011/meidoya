@@ -30,7 +30,7 @@ function jsonResponse(body: unknown, init: ResponseInit = {}): Response {
 }
 
 describe("DiscordTransport", () => {
-  it("renders embeds and posts into the thread channel", async () => {
+  it("renders normal text and posts into the thread channel", async () => {
     const client = new FakePlatformClient("discord");
     const transport = new DiscordTransport(client);
     const ref = await transport.postThreadMessage(THREAD, {
@@ -40,12 +40,8 @@ describe("DiscordTransport", () => {
 
     expect(ref.threadRef).toBe("999999999999999999");
     const body = client.callsOfKind("send")[0]?.message.body;
-    expect(body?.["embeds"]).toEqual([
-      {
-        description: "Result: done",
-        fields: [{ name: "diff", value: "https://example.invalid/diff", inline: false }],
-      },
-    ]);
+    expect(body?.["content"]).toBe("Result: done\n\ndiff: https://example.invalid/diff");
+    expect(body?.["embeds"]).toBeUndefined();
     expect(body?.["allowed_mentions"]).toEqual({ parse: [] });
   });
 
