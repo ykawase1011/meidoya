@@ -269,6 +269,140 @@ describe("chat ingress", () => {
     await test.close();
   });
 
+  it("accepts a natural Japanese approval posted directly in the channel", async () => {
+    const test = await rig();
+    await test.gateway.conversations?.ensure({
+      conversationId: "conv-discord-direct",
+      workspaceId: WORKSPACE,
+      ingressBindingId: `discord:${WORKSPACE}`,
+      thread: { transport: "discord", channelRef: "D_WORK", threadRef: "discord-root" },
+      rootMessage: {
+        transport: "discord",
+        channelRef: "D_WORK",
+        messageRef: "discord-root",
+        threadRef: "discord-root",
+      },
+    });
+    await test.repository.createTask({
+      taskId: "task-discord-direct",
+      workspaceId: WORKSPACE,
+      conversationId: "conv-discord-direct",
+      origin: "chat",
+      pipeline: "coding",
+      title: "READMEの確認",
+      intent: { summary: "READMEを確認", projects: ["grammarxiv"], origin: "chat" },
+      temporalWorkflowId: "task/task-discord-direct",
+      now: Date.now(),
+    });
+    await test.repository.recordCheckpoint({
+      id: "cp_discord_direct",
+      taskId: "task-discord-direct",
+      kind: "plan-approval",
+      status: "pending",
+      prompt: "この計画を承認しますか？",
+      choices: [],
+      version: 1,
+    });
+    await test.gateway.conversations?.ensure({
+      conversationId: "conv-cancelled-stale",
+      workspaceId: WORKSPACE,
+      ingressBindingId: `discord:${WORKSPACE}`,
+      thread: { transport: "discord", channelRef: "D_WORK", threadRef: "stale-root" },
+    });
+    await test.repository.createTask({
+      taskId: "task-cancelled-stale",
+      workspaceId: WORKSPACE,
+      conversationId: "conv-cancelled-stale",
+      origin: "chat",
+      pipeline: "coding",
+      title: "キャンセル済み",
+      intent: { summary: "stale", projects: ["grammarxiv"], origin: "chat" },
+      temporalWorkflowId: "task/task-cancelled-stale",
+      now: Date.now(),
+    });
+    await test.repository.recordCheckpoint({
+      id: "cp_cancelled_stale",
+      taskId: "task-cancelled-stale",
+      kind: "clarification",
+      status: "pending",
+      prompt: "古い確認",
+      choices: [],
+      version: 1,
+    });
+    await test.repository.forceTaskStatus("task-cancelled-stale", "cancelled");
+
+    const result = await test.ingress.handle(
+      discordEvent({
+        messageRef: "discord-direct-answer",
+        text: "全て確認しました。承認します。",
+      }),
+    );
+
+    expect(result).toEqual({
+      kind: "checkpoint-answered",
+      checkpointId: "cp_discord_direct",
+      workspaceId: WORKSPACE,
+    });
+    expect(test.answerCheckpoint.mock.calls[0]?.[1]).toEqual({
+      checkpointId: "cp_discord_direct",
+      decision: "approve",
+      expectedVersion: 1,
+    });
+    expect(test.createTask).not.toHaveBeenCalled();
+    expect(test.discord.callsOfKind("send")[0]?.message.body["content"]).toBe(
+      "✅ タスク「READMEの確認」への回答を受け付けました。",
+    );
+    await test.close();
+  });
+
+  it("lists task names instead of guessing when a direct approval is ambiguous", async () => {
+    const test = await rig();
+    const addPending = async (suffix: string, title: string): Promise<void> => {
+      const conversationId = `conv-${suffix}`;
+      const taskId = `task-${suffix}`;
+      await test.gateway.conversations?.ensure({
+        conversationId,
+        workspaceId: WORKSPACE,
+        ingressBindingId: `discord:${WORKSPACE}`,
+        thread: { transport: "discord", channelRef: "D_WORK", threadRef: `root-${suffix}` },
+      });
+      await test.repository.createTask({
+        taskId,
+        workspaceId: WORKSPACE,
+        conversationId,
+        origin: "chat",
+        pipeline: "coding",
+        title,
+        intent: { summary: title, projects: ["grammarxiv"], origin: "chat" },
+        temporalWorkflowId: `task/${taskId}`,
+        now: Date.now(),
+      });
+      await test.repository.recordCheckpoint({
+        id: `cp-${suffix}`,
+        taskId,
+        kind: "plan-approval",
+        status: "pending",
+        prompt: "承認しますか？",
+        choices: [],
+        version: 1,
+      });
+    };
+    await addPending("one", "READMEの確認");
+    await addPending("two", "リリース準備");
+
+    await expect(
+      test.ingress.handle(discordEvent({ messageRef: "ambiguous-answer", text: "承認" })),
+    ).resolves.toEqual({ kind: "rejected", reason: "ambiguous-checkpoint" });
+    const content = String(test.discord.callsOfKind("send")[0]?.message.body["content"]);
+    expect(content).toContain("READMEの確認");
+    expect(content).toContain("リリース準備");
+    expect(content).not.toContain("task-one");
+    expect(content).not.toContain("cp-one");
+    expect(test.answerCheckpoint).not.toHaveBeenCalled();
+    expect(test.createTask).not.toHaveBeenCalled();
+    await test.close();
+  });
+
   it("fails closed for an unbound channel", async () => {
     const test = await rig();
     await expect(test.ingress.handle(slackEvent({ channelRef: "C_OTHER" }))).resolves.toEqual({

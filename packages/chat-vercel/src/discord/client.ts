@@ -111,7 +111,9 @@ export class DiscordPlatformClient implements ChatPlatformClient {
     if (this.options.resolveThreadParents === false) return event;
     const cached = this.parentCache.get(event.channelRef);
     if (cached !== undefined) {
-      return cached === null ? event : { ...event, parentChannelRef: cached, threadRef: event.channelRef };
+      return cached === null
+        ? event
+        : { ...event, parentChannelRef: cached, threadRef: event.threadRef ?? event.channelRef };
     }
     let parent: string | null = null;
     try {
@@ -127,7 +129,7 @@ export class DiscordPlatformClient implements ChatPlatformClient {
     this.parentCache.set(event.channelRef, parent);
     return parent === null
       ? event
-      : { ...event, parentChannelRef: parent, threadRef: event.channelRef };
+      : { ...event, parentChannelRef: parent, threadRef: event.threadRef ?? event.channelRef };
   }
 
   async openEventStream(handler: InboundEventHandler): Promise<PlatformEventStream> {
@@ -159,6 +161,48 @@ export class DiscordPlatformClient implements ChatPlatformClient {
       const stop = attachGateway(socket, wrapped, {
         token: this.options.botToken,
         intents: this.options.intents ?? DEFAULT_INTENTS,
+        handleInteraction: async (interaction) => {
+          if (interaction.action === "add-instruction") {
+            await this.request(
+              "POST",
+              `/interactions/${interaction.id}/${interaction.token}/callback`,
+              {
+                type: 9,
+                data: {
+                  custom_id: `meidoya:checkpoint:instruction:${interaction.messageRef}`,
+                  title: "回答・追加指示",
+                  components: [
+                    {
+                      type: 1,
+                      components: [
+                        {
+                          type: 4,
+                          custom_id: "meidoya:checkpoint:instruction-text",
+                          label: "回答または追加指示",
+                          style: 2,
+                          min_length: 1,
+                          max_length: 1000,
+                          required: true,
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            );
+            return;
+          }
+          await this.request(
+            "POST",
+            `/interactions/${interaction.id}/${interaction.token}/callback`,
+            { type: 6 },
+          );
+          await wrapped(interaction.event);
+          await this.editMessage(
+            { channelRef: interaction.channelRef, messageRef: interaction.messageRef },
+            { components: [] },
+          );
+        },
         ...(this.options.setInterval === undefined
           ? {}
           : { setInterval: this.options.setInterval }),
@@ -266,10 +310,30 @@ type GatewayFrame = {
     guild_id?: string;
     content?: string;
     author?: { id?: string; bot?: boolean };
+    member?: { user?: { id?: string } };
+    user?: { id?: string };
     message_reference?: { message_id?: string; channel_id?: string };
+    message?: { id?: string };
+    token?: string;
+    data?: {
+      custom_id?: string;
+      component_type?: number;
+      components?: Array<{
+        components?: Array<{ custom_id?: string; value?: string }>;
+      }>;
+    };
     thread?: { id?: string };
     type?: number;
   };
+};
+
+export type DiscordComponentInteraction = {
+  id: string;
+  token: string;
+  channelRef: string;
+  messageRef: string;
+  action: "approve" | "add-instruction" | "instruction-submit" | "cancel";
+  event: InboundChatEvent;
 };
 
 export type GatewayOptions = {
@@ -277,6 +341,7 @@ export type GatewayOptions = {
   intents: number;
   setInterval?: (handler: () => void, ms: number) => unknown;
   clearInterval?: (handle: unknown) => void;
+  handleInteraction?: (interaction: DiscordComponentInteraction) => void | Promise<void>;
 };
 
 /** Exported for tests: identify + heartbeat + MESSAGE_CREATE normalisation. */
@@ -325,6 +390,13 @@ export function attachGateway(
       socket.close();
       return;
     }
+    if (frame.op === 0 && frame.t === "INTERACTION_CREATE") {
+      const interaction = toDiscordComponentInteraction(frame);
+      if (interaction !== undefined && options.handleInteraction !== undefined) {
+        void Promise.resolve(options.handleInteraction(interaction)).catch(() => undefined);
+      }
+      return;
+    }
     if (frame.op !== 0 || frame.t !== "MESSAGE_CREATE") return;
     const event = toInboundDiscordEvent(frame);
     if (event) void Promise.resolve(handler(event)).catch(() => undefined);
@@ -336,6 +408,79 @@ export function attachGateway(
 
   return () => {
     if (heartbeat !== undefined) stop(heartbeat);
+  };
+}
+
+export function toDiscordComponentInteraction(
+  frame: GatewayFrame,
+): DiscordComponentInteraction | undefined {
+  const data = frame.d;
+  if (
+    frame.op !== 0 ||
+    frame.t !== "INTERACTION_CREATE" ||
+    (data?.type !== 3 && data?.type !== 5)
+  ) {
+    return undefined;
+  }
+  const instructionPrefix = "meidoya:checkpoint:instruction:";
+  const instructionText = data.data?.components
+    ?.flatMap((row) => row.components ?? [])
+    .find((component) => component.custom_id === "meidoya:checkpoint:instruction-text")
+    ?.value?.trim();
+  const action = (() => {
+    if (data.type === 5 && data.data?.custom_id?.startsWith(instructionPrefix)) {
+      return instructionText === undefined || instructionText.length === 0
+        ? undefined
+        : ("instruction-submit" as const);
+    }
+    switch (data.data?.custom_id) {
+      case "meidoya:checkpoint:approve":
+        return "approve" as const;
+      case "meidoya:checkpoint:add-instruction":
+        return "add-instruction" as const;
+      case "meidoya:checkpoint:cancel":
+        return "cancel" as const;
+      default:
+        return undefined;
+    }
+  })();
+  const authorRef = data.member?.user?.id ?? data.user?.id;
+  const messageRef =
+    data.type === 5
+      ? data.data?.custom_id?.slice(instructionPrefix.length)
+      : data.message?.id;
+  if (
+    action === undefined ||
+    typeof data.id !== "string" ||
+    typeof data.token !== "string" ||
+    typeof data.channel_id !== "string" ||
+    typeof data.guild_id !== "string" ||
+    typeof authorRef !== "string" ||
+    typeof messageRef !== "string"
+  ) {
+    return undefined;
+  }
+  return {
+    id: data.id,
+    token: data.token,
+    channelRef: data.channel_id,
+    messageRef,
+    action,
+    event: {
+      transport: "discord",
+      accountRef: data.guild_id,
+      channelRef: data.channel_id,
+      messageRef: data.id,
+      threadRef: messageRef,
+      authorRef,
+      text:
+        action === "approve"
+          ? "承認"
+          : action === "cancel"
+            ? "キャンセル"
+            : instructionText ?? "回答・指示を入力",
+      receivedAt: Date.now(),
+    },
   };
 }
 

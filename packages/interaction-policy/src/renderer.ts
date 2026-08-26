@@ -59,6 +59,7 @@ const PATH_PATTERNS: ReadonlyArray<RegExp> = [
 // Internal control-plane identifiers and bare UUIDs.
 const INTERNAL_ID_PATTERNS: ReadonlyArray<RegExp> = [
   /\b(?:task|cp|ws|env|conv|run|step|art|sched|node|evt|proj)_[A-Za-z0-9]{2,}/g,
+  /\b(?:task|cp|ws|env|conv|run|step|art|sched|node|evt|proj)-[A-Za-z0-9][A-Za-z0-9-]{11,}\b/g,
   /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi,
 ];
 

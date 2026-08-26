@@ -13,6 +13,31 @@ export const SLACK_BLOCK_LIMIT = 50;
 
 export const DISCORD_CONTENT_LIMIT = 2000;
 
+const DISCORD_CHECKPOINT_ACTIONS: Readonly<
+  Record<string, { customId: string; label: string; style: number } | undefined>
+> = {
+  approve: { customId: "meidoya:checkpoint:approve", label: "承認", style: 3 },
+  approved: { customId: "meidoya:checkpoint:approve", label: "承認", style: 3 },
+  "承認": { customId: "meidoya:checkpoint:approve", label: "承認", style: 3 },
+  "add instruction": {
+    customId: "meidoya:checkpoint:add-instruction",
+    label: "回答・指示を入力",
+    style: 2,
+  },
+  "指示を追加": {
+    customId: "meidoya:checkpoint:add-instruction",
+    label: "回答・指示を入力",
+    style: 2,
+  },
+  "回答・指示を入力": {
+    customId: "meidoya:checkpoint:add-instruction",
+    label: "回答・指示を入力",
+    style: 2,
+  },
+  cancel: { customId: "meidoya:checkpoint:cancel", label: "キャンセル", style: 4 },
+  "キャンセル": { customId: "meidoya:checkpoint:cancel", label: "キャンセル", style: 4 },
+};
+
 function truncate(text: string, limit: number): string {
   if (text.length <= limit) return text;
   return `${text.slice(0, Math.max(0, limit - 1))}…`;
@@ -130,9 +155,25 @@ export function toSlackMessage(message: RenderedMessage): PlatformMessageBody {
 export function toDiscordMessage(message: RenderedMessage): PlatformMessageBody {
   const links = (message.links ?? []).map((link) => `${link.label}: ${link.url}`);
   const content = truncate([message.text, ...links].filter((part) => part.length > 0).join("\n\n"), DISCORD_CONTENT_LIMIT);
+  const buttons = (message.choices ?? []).flatMap((choice) => {
+    const action = DISCORD_CHECKPOINT_ACTIONS[choice.trim().toLocaleLowerCase("ja-JP")];
+    return action === undefined
+      ? []
+      : [
+          {
+            type: 2,
+            style: action.style,
+            label: action.label,
+            custom_id: action.customId,
+          },
+        ];
+  });
 
   return {
     content,
     allowed_mentions: { parse: [] },
+    ...(buttons.length === 0
+      ? {}
+      : { components: [{ type: 1, components: buttons.slice(0, 5) }] }),
   };
 }
