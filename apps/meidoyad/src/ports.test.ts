@@ -106,6 +106,25 @@ describe("checkpoint policy port", () => {
     ).toBe(true);
   });
 
+  it("uses human-facing Japanese choices without exposing the task id", () => {
+    const decision = decide(port, {
+      taskId: "task-internal-secret",
+      workspaceId: "ws",
+      kind: "clarification",
+      requested: true,
+    });
+    expect(decision).toEqual({
+      required: true,
+      prompt: "作業を続けるため、確認が必要です。",
+      choices: [
+        { id: "approve", label: "承認" },
+        { id: "add-instruction", label: "回答・指示を入力" },
+        { id: "cancel", label: "キャンセル" },
+      ],
+    });
+    expect(JSON.stringify(decision)).not.toContain("task-internal-secret");
+  });
+
   it("fires an on-findings review gate only when there are findings", () => {
     const withFindings = (hasFindings: boolean): boolean =>
       decide(port, { taskId: "t", workspaceId: "ws", kind: "review-approval", hasFindings })

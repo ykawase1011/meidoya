@@ -90,4 +90,32 @@ describe("discord rendering", () => {
     );
     expect(body["embeds"]).toBeUndefined();
   });
+
+  it("renders checkpoint choices as Japanese Discord buttons", () => {
+    const body = toDiscordMessage({
+      text: "❓ タスク「README確認」の計画確認\n\nこの計画を承認しますか？",
+      choices: ["Approve", "Add instruction", "Cancel"],
+    });
+    expect(body["components"]).toEqual([
+      {
+        type: 1,
+        components: [
+          { type: 2, style: 3, label: "承認", custom_id: "meidoya:checkpoint:approve" },
+          {
+            type: 2,
+            style: 2,
+            label: "回答・指示を入力",
+            custom_id: "meidoya:checkpoint:add-instruction",
+          },
+          {
+            type: 2,
+            style: 4,
+            label: "キャンセル",
+            custom_id: "meidoya:checkpoint:cancel",
+          },
+        ],
+      },
+    ]);
+    expect(body["embeds"]).toBeUndefined();
+  });
 });

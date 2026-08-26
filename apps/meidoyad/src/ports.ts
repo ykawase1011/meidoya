@@ -47,9 +47,9 @@ const GATE_OF_KIND: Readonly<Record<string, GateKind | undefined>> = {
 };
 
 const APPROVE_CHOICES = [
-  { id: "approve", label: "Approve" },
-  { id: "add-instruction", label: "Add instruction" },
-  { id: "cancel", label: "Cancel" },
+  { id: "approve", label: "承認" },
+  { id: "add-instruction", label: "回答・指示を入力" },
+  { id: "cancel", label: "キャンセル" },
 ];
 
 /**
@@ -95,10 +95,7 @@ export function createCheckpointPolicyPort(
       const configured = policyOf(query.workspaceId);
       if (configured === undefined) {
         // Fail closed: without a policy we cannot know a gate is unnecessary.
-        return prompt(
-          `Task ${query.taskId} is waiting for ${query.kind.replace(/-/g, " ")}` +
-            " (no policy is configured for its workspace).",
-        );
+        return prompt("承認ポリシーを確認できないため、安全のため作業を停止しています。");
       }
       const policy = configured.policy;
 
@@ -151,7 +148,7 @@ export function createCheckpointPolicyPort(
       })();
 
       if (!required) return { required: false };
-      return prompt(`Task ${query.taskId} is waiting for ${query.kind.replace(/-/g, " ")}.`);
+      return prompt("作業を続けるため、確認が必要です。");
     },
   };
 }

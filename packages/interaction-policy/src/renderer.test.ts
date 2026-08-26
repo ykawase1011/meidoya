@@ -35,8 +35,11 @@ describe("scrub (07 section 9)", () => {
   });
 
   it("removes internal IDs", () => {
-    const out = scrub("task_01H8 finished checkpoint cp_456 in ws_prod (run 3f2504e0-4f89-11d3-9a0c-0305e82c3301)");
+    const out = scrub(
+      "task_01H8 and task-abcdef0123456789abcdef0123456789 finished checkpoint cp_456 in ws_prod (run 3f2504e0-4f89-11d3-9a0c-0305e82c3301)",
+    );
     expect(out).not.toContain("task_01H8");
+    expect(out).not.toContain("task-abcdef0123456789abcdef0123456789");
     expect(out).not.toContain("cp_456");
     expect(out).not.toContain("ws_prod");
     expect(out).not.toContain("3f2504e0");

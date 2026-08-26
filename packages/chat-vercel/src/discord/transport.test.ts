@@ -4,7 +4,12 @@ import { UnknownEmojiError } from "../emoji.js";
 import { ChatRateLimitError, ChatTransportError } from "../errors.js";
 import { FakePlatformClient, FakeSocket } from "../fake-platform-client.js";
 import type { FetchLike } from "../platform-client.js";
-import { DiscordPlatformClient, attachGateway, toInboundDiscordEvent } from "./client.js";
+import {
+  DiscordPlatformClient,
+  attachGateway,
+  toDiscordComponentInteraction,
+  toInboundDiscordEvent,
+} from "./client.js";
 import { DiscordTransport } from "./transport.js";
 
 const DUMMY_BOT_TOKEN = "discord-dummy-not-a-real-token";
@@ -185,6 +190,176 @@ describe("Discord gateway", () => {
         },
       })
     ).toBeUndefined();
+  });
+
+  it("normalizes a checkpoint button interaction as a reply to the bot message", () => {
+    expect(
+      toDiscordComponentInteraction({
+        op: 0,
+        t: "INTERACTION_CREATE",
+        d: {
+          id: "interaction-1",
+          token: "interaction-token",
+          type: 3,
+          channel_id: "D_WORK",
+          guild_id: "G_PERSONAL",
+          member: { user: { id: "U_HUMAN" } },
+          message: { id: "bot-checkpoint-message" },
+          data: { component_type: 2, custom_id: "meidoya:checkpoint:approve" },
+        },
+      }),
+    ).toMatchObject({
+      action: "approve",
+      event: {
+        channelRef: "D_WORK",
+        threadRef: "bot-checkpoint-message",
+        text: "承認",
+      },
+    });
+  });
+
+  it("acknowledges a checkpoint button, routes it, and removes the buttons", async () => {
+    const socket = new FakeSocket();
+    const requests: Array<{ url: string; method?: string; body?: unknown }> = [];
+    const seen: string[] = [];
+    const client = new DiscordPlatformClient({
+      botToken: DUMMY_BOT_TOKEN,
+      socketFactory: () => socket,
+      fetch: async (url, init) => {
+        requests.push({
+          url,
+          ...(init?.method === undefined ? {} : { method: init.method }),
+          ...(init?.body === undefined ? {} : { body: JSON.parse(String(init.body)) }),
+        });
+        return new Response(null, { status: 204 });
+      },
+      resolveThreadParents: false,
+    });
+    await client.openEventStream((event) => {
+      seen.push(`${event.threadRef}:${event.text}`);
+    });
+    socket.receive({
+      op: 0,
+      t: "INTERACTION_CREATE",
+      d: {
+        id: "interaction-1",
+        token: "interaction-token",
+        type: 3,
+        channel_id: "D_WORK",
+        guild_id: "G_PERSONAL",
+        member: { user: { id: "U_HUMAN" } },
+        message: { id: "bot-checkpoint-message" },
+        data: { component_type: 2, custom_id: "meidoya:checkpoint:approve" },
+      },
+    });
+    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(seen).toEqual(["bot-checkpoint-message:承認"]);
+    expect(requests).toEqual([
+      {
+        url: "https://discord.com/api/v10/interactions/interaction-1/interaction-token/callback",
+        method: "POST",
+        body: { type: 6 },
+      },
+      {
+        url: "https://discord.com/api/v10/channels/D_WORK/messages/bot-checkpoint-message",
+        method: "PATCH",
+        body: { components: [] },
+      },
+    ]);
+  });
+
+  it("opens a modal and routes the entered instruction to the checkpoint", async () => {
+    const socket = new FakeSocket();
+    const requests: Array<{ url: string; method?: string; body?: unknown }> = [];
+    const seen: string[] = [];
+    const client = new DiscordPlatformClient({
+      botToken: DUMMY_BOT_TOKEN,
+      socketFactory: () => socket,
+      fetch: async (url, init) => {
+        requests.push({
+          url,
+          ...(init?.method === undefined ? {} : { method: init.method }),
+          ...(init?.body === undefined ? {} : { body: JSON.parse(String(init.body)) }),
+        });
+        return new Response(null, { status: 204 });
+      },
+      resolveThreadParents: false,
+    });
+    await client.openEventStream((event) => {
+      seen.push(`${event.threadRef}:${event.text}`);
+    });
+
+    socket.receive({
+      op: 0,
+      t: "INTERACTION_CREATE",
+      d: {
+        id: "interaction-open-modal",
+        token: "modal-open-token",
+        type: 3,
+        channel_id: "D_WORK",
+        guild_id: "G_PERSONAL",
+        member: { user: { id: "U_HUMAN" } },
+        message: { id: "bot-checkpoint-message" },
+        data: { component_type: 2, custom_id: "meidoya:checkpoint:add-instruction" },
+      },
+    });
+    await new Promise((resolve) => setImmediate(resolve));
+
+    const modalBody = requests[0]?.body as { type?: number; data?: { custom_id?: string } };
+    expect(modalBody).toMatchObject({
+      type: 9,
+      data: {
+        custom_id: "meidoya:checkpoint:instruction:bot-checkpoint-message",
+        title: "回答・追加指示",
+      },
+    });
+    expect(seen).toEqual([]);
+
+    socket.receive({
+      op: 0,
+      t: "INTERACTION_CREATE",
+      d: {
+        id: "interaction-submit-modal",
+        token: "modal-submit-token",
+        type: 5,
+        channel_id: "D_WORK",
+        guild_id: "G_PERSONAL",
+        member: { user: { id: "U_HUMAN" } },
+        data: {
+          custom_id: "meidoya:checkpoint:instruction:bot-checkpoint-message",
+          components: [
+            {
+              components: [
+                {
+                  custom_id: "meidoya:checkpoint:instruction-text",
+                  value: "本番環境ではなくステージングで実行してください",
+                },
+              ],
+            },
+          ],
+        },
+      },
+    });
+    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(seen).toEqual([
+      "bot-checkpoint-message:本番環境ではなくステージングで実行してください",
+    ]);
+    expect(requests.slice(1)).toEqual([
+      {
+        url: "https://discord.com/api/v10/interactions/interaction-submit-modal/modal-submit-token/callback",
+        method: "POST",
+        body: { type: 6 },
+      },
+      {
+        url: "https://discord.com/api/v10/channels/D_WORK/messages/bot-checkpoint-message",
+        method: "PATCH",
+        body: { components: [] },
+      },
+    ]);
   });
 
   it("closes when the gateway requests a reconnect", () => {

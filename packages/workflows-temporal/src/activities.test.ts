@@ -293,9 +293,12 @@ describe("activities", () => {
     const policy = deps.interactionPolicy as FakeInteractionPolicy;
     expect(policy.events.map((e) => e.type)).toEqual(["WaitingPlanApproval"]);
     expect(policy.events[0]?.payload).toMatchObject({
+      title: "タスク「t」の計画確認",
       checkpointId: created.checkpointId,
       checkpointVersion: created.version,
+      prompt: "Approve?",
     });
+    expect(String(policy.events[0]?.payload["prompt"])).not.toContain("taskId");
 
     const skipped = await activities.createCheckpoint({
       taskId: "t1",

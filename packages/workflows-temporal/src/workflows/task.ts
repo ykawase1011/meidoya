@@ -563,7 +563,7 @@ export async function runTaskWorkflow(
 
     const proceeded = await runGate(
       "limit-exceeded",
-      `Task paused: execution limit reached (${first.limit}).`,
+      `実行上限「${first.limit}」に達しました。今回に限り上限を延長して続行しますか？`,
       { requested: true },
     );
     if (!proceeded) return false;
@@ -670,8 +670,8 @@ export async function runTaskWorkflow(
         if (gatedCapabilities.length > 0) {
           const approved = await runGate(
             "side-effect-approval",
-            "This plan performs an effect outside the workspace" +
-              ` (${gatedCapabilities.join(", ")}). Approve?`,
+            `次の外部操作を承認しますか？\n概要: ${planned.plan.summary}\n` +
+              `必要な権限: ${gatedCapabilities.join(", ")}`,
             { securityMandated: true, requested: true, risk: planned.plan.risk },
           );
           // The approval is the ONLY thing that lets this grant — gated
@@ -730,7 +730,10 @@ export async function runTaskWorkflow(
 
         // 06 section 1.2: the plan gate stops AFTER the plan exists, which is
         // also the only moment its risk is known.
-        const proceeded = await runGate("plan-approval", "Approve this plan?", {
+        const proceeded = await runGate("plan-approval", `次の実行計画を承認しますか？\n` +
+          `概要: ${planned.plan.summary}\n` +
+          `リスク: ${planned.plan.risk}\n` +
+          `手順: ${planned.plan.steps.map((plannedStep) => plannedStep.description).join(" / ")}`, {
           risk: planned.plan.risk,
         });
         return proceeded ? "success" : "halt";
@@ -1096,7 +1099,11 @@ export async function runTaskWorkflow(
     ) {
       const context: GateContext =
         step.gate === "review-approval" ? { hasFindings: hasFindings() } : {};
-      const proceeded = await runGate(step.gate, `Approve ${step.key}?`, context);
+      const proceeded = await runGate(
+        step.gate,
+        `工程「${step.kind}」を実行してよいか確認してください。`,
+        context,
+      );
       if (!proceeded) {
         halted = true;
         break;
@@ -1187,9 +1194,13 @@ export async function runTaskWorkflow(
     // `pipelines-guard.test.ts` pins that property, and says what has to be
     // rebuilt (and gated with a patch id) the day a pipeline breaks it.
     if (!reviewGateSatisfied) {
-      const proceeded = await runGate("review-approval", "Approve completion?", {
+      const proceeded = await runGate(
+        "review-approval",
+        `次の作業結果を承認して完了にしますか？\n結果: ${taskSummary}`,
+        {
         hasFindings: hasFindings(),
-      });
+        },
+      );
       if (!proceeded) {
         return {
           taskId: input.taskId,

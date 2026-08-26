@@ -55,6 +55,21 @@ const CHECKPOINT_EVENT_TYPE: Readonly<Record<HumanCheckpointKind, DomainEventTyp
   "limit-exceeded": "TaskNeedsAttention",
 };
 
+function checkpointTitle(kind: HumanCheckpointKind, taskTitle: string): string {
+  switch (kind) {
+    case "clarification":
+      return `タスク「${taskTitle}」について確認`;
+    case "plan-approval":
+      return `タスク「${taskTitle}」の計画確認`;
+    case "review-approval":
+      return `タスク「${taskTitle}」の完了確認`;
+    case "side-effect-approval":
+      return `タスク「${taskTitle}」の外部操作確認`;
+    case "limit-exceeded":
+      return `タスク「${taskTitle}」の実行上限`;
+  }
+}
+
 /* ------------------------------------------------------------------ *
  * Activity input / output types (all JSON-serializable)
  * ------------------------------------------------------------------ */
@@ -763,6 +778,11 @@ export function createActivities(deps: ActivityDependencies): Activities {
       });
       if (!decision.required) return { checkpointId: "", version: input.version, required: false };
 
+      const task = await deps.repository.loadTask(input.taskId);
+      if (task === undefined || task.workspaceId !== input.workspaceId) {
+        throw new Error(`unknown task ${input.taskId}`);
+      }
+
       const checkpoint = buildCheckpoint({
         id: deps.ids.next("checkpoint"),
         taskId: input.taskId,
@@ -770,7 +790,7 @@ export function createActivities(deps: ActivityDependencies): Activities {
         // `input.prompt` is model text on some paths. It is stored for the
         // operator UI but only ever leaves the process through the interaction
         // policy's whitelist + scrubber below (07 section 9).
-        prompt: decision.prompt || input.prompt,
+        prompt: input.prompt.trim().length > 0 ? input.prompt : decision.prompt,
         choices: decision.choices,
         version: input.version,
       });
@@ -781,6 +801,7 @@ export function createActivities(deps: ActivityDependencies): Activities {
         workspaceId: input.workspaceId,
         type: CHECKPOINT_EVENT_TYPE[input.kind],
         payload: {
+          title: checkpointTitle(input.kind, task.title),
           checkpointId: checkpoint.id,
           checkpointVersion: checkpoint.version,
           prompt: checkpoint.prompt,

@@ -78,14 +78,20 @@ Dockerを使わずTemporal CLIを別ターミナルの`127.0.0.1:7233`で起動�
 
 1. 対象チャンネルへ新しいルート投稿を送る。
 2. `pnpm meidoya task list --limit 20`で`origin=chat`のタスクを確認する。
-3. checkpoint通知へスレッド返信する。
-4. 承認は`Approve`、`承認します`、拒否は`Reject`、`却下`を使う。
-5. clarificationには任意の回答文を返信する。
+3. Discordではcheckpoint通知の`承認`／`回答・指示を入力`／`キャンセル`ボタンを
+   使う。`回答・指示を入力`はモーダルを開き、自由入力を元の確認へ返す。
+4. テキストでは確認メッセージへ`Approve`、`承認します`、`Reject`、`却下`などを
+   返信できる。チャンネル内の確認待ちが1件だけなら、同じ文をチャンネル直下へ
+   投稿しても回答として扱う。
+5. clarificationには確認メッセージへの任意の返信、またはチャンネル直下の
+   `回答: <内容>`を使う。確認待ちが複数ある場合は、Meidoyaがタスク名を表示して
+   対象メッセージへの返信を求め、推測では処理しない。
 
 同じSlack envelopeやDiscord messageが再配送されても、platform message ID由来の
 idempotency keyで同じタスクへ収束します。
 
-返答はSlackではBlock Kit、Discordではコピー可能な通常テキストへ整形されます。自然言語のTask一覧と
+確認通知は内部IDではなくタスク名と実際の質問・計画概要を表示します。返答はSlackでは
+Block Kit、Discordではコピー可能な通常テキストへ整形されます。自然言語のTask一覧と
 状態遷移の詳細は[`task-status-ja.md`](./task-status-ja.md)を参照してください。
 
 ## 4. Hermesからの一時切替

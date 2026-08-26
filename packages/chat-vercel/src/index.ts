@@ -12,7 +12,9 @@ export { SlackTransport, createSlackTransport } from "./slack/transport.js";
 export {
   DiscordPlatformClient,
   type DiscordClientOptions,
+  type DiscordComponentInteraction,
   type GatewayOptions,
+  toDiscordComponentInteraction,
   toInboundDiscordEvent,
   attachGateway,
 } from "./discord/client.js";
