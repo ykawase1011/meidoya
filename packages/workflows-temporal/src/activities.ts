@@ -99,6 +99,7 @@ export type MaidWorkspaceContext = {
   waitingTaskCount: number;
   enabledScheduleCount: number;
   openTasks: Array<{ taskId: TaskId; title: string; status: TaskStatus }>;
+  conversationHistory: Array<{ role: "user" | "assistant"; content: string }>;
 };
 
 export type PlanTaskInput = {

@@ -116,6 +116,7 @@ describe("agent prompts", () => {
         openTasks: [
           { taskId: "task-readme", title: "README確認", status: "waiting_user_input" },
         ],
+        conversationHistory: [],
       },
     );
 
@@ -124,6 +125,34 @@ describe("agent prompts", () => {
     expect(prompt).toContain("README確認");
     expect(prompt).toContain("task-readme");
     expect(prompt).toContain("Never merely repeat the user's message");
+  });
+
+  it("passes the same thread's prior dialogue as a continuous session", () => {
+    const prompt = prompts.maidAssessment(
+      {
+        workspaceId: "ws",
+        requestKey: "schedule-time-answer",
+        origin: "chat",
+        messageRef: "message-3",
+        idempotencyKey: "schedule-time-answer",
+      },
+      {
+        activeTaskCount: 0,
+        waitingTaskCount: 0,
+        enabledScheduleCount: 0,
+        openTasks: [],
+        conversationHistory: [
+          { role: "user", content: "利用量を毎日投稿して10分ごとに更新して" },
+          { role: "assistant", content: "日次の新規投稿は毎日何時にしますか？" },
+        ],
+      },
+    );
+
+    expect(prompt).toContain("one continuous conversation session");
+    expect(prompt).toContain("利用量を毎日投稿して10分ごとに更新して");
+    expect(prompt).toContain("日次の新規投稿は毎日何時にしますか？");
+    expect(prompt).toContain("continue and complete the original request");
+    expect(prompt).toContain("Never claim that a task, schedule, post, or external operation");
   });
 
   it("forces the dedicated CLI schedule entry into schedule interpretation", () => {

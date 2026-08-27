@@ -212,6 +212,7 @@ describe("activities", () => {
           openTasks: [
             { taskId: "task-readme", title: "README確認", status: "waiting_user_input" },
           ],
+          conversationHistory: [],
         };
       },
       async materializeScheduledRequest() {

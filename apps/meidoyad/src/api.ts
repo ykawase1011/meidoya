@@ -79,6 +79,25 @@ export type ControlPlaneServiceOptions = {
  */
 const NODE_REFUSED = "node authentication failed";
 
+const CONVERSATION_EVENT_ROLES = new Map<string, "user" | "assistant">([
+  ["RequestAccepted", "user"],
+  ["UserAnswered", "user"],
+  ["MaidResponded", "assistant"],
+  ["TaskCompleted", "assistant"],
+  ["TaskFailed", "assistant"],
+  ["TaskNeedsAttention", "assistant"],
+]);
+
+function conversationText(payload: unknown): string | undefined {
+  if (typeof payload !== "object" || payload === null) return undefined;
+  const record = payload as Record<string, unknown>;
+  for (const key of ["summary", "answer", "question", "prompt", "message", "reason"]) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim().length > 0) return value.trim().slice(0, 4_000);
+  }
+  return undefined;
+}
+
 function notFound(what: string): never {
   // Deliberately indistinguishable from "exists but out of scope": a caller
   // must never be able to probe for objects of another workspace.
@@ -1044,7 +1063,9 @@ export class ControlPlaneService {
     waitingTaskCount: number;
     enabledScheduleCount: number;
     openTasks: Array<{ taskId: string; title: string; status: TaskStatus }>;
+    conversationHistory: Array<{ role: "user" | "assistant"; content: string }>;
   } {
+    const current = this.#repo.loadTaskSync(input.taskId);
     const tasks = this.#repo
       .listTasks(input.workspaceId, {
         status: [...ACTIVE_TASK_STATUSES, ...WAITING_TASK_STATUSES],
@@ -1053,6 +1074,10 @@ export class ControlPlaneService {
       .filter((task) => task.id !== input.taskId);
     const active = new Set<TaskStatus>(ACTIVE_TASK_STATUSES);
     const waiting = new Set<TaskStatus>(WAITING_TASK_STATUSES);
+    const conversationHistory =
+      current?.conversationId === undefined
+        ? []
+        : this.#conversationHistory(input.workspaceId, current.conversationId, input.taskId);
     return {
       activeTaskCount: tasks.filter((task) => active.has(task.status)).length,
       waitingTaskCount: tasks.filter((task) => waiting.has(task.status)).length,
@@ -1064,7 +1089,98 @@ export class ControlPlaneService {
         title: task.title,
         status: task.status,
       })),
+      conversationHistory,
     };
+  }
+
+  #conversationHistory(
+    workspaceId: string,
+    conversationId: string,
+    currentTaskId: string,
+  ): Array<{ role: "user" | "assistant"; content: string }> {
+    const taskRows = this.#repo.db
+      .prepare(
+        `SELECT id FROM tasks
+          WHERE workspace_id = ? AND conversation_id = ? AND id != ?
+          ORDER BY rowid DESC LIMIT 12`,
+      )
+      .all(workspaceId, conversationId, currentTaskId) as Array<{ id: string }>;
+    const turns: Array<{
+      role: "user" | "assistant";
+      content: string;
+      at: number;
+      order: number;
+    }> = [];
+
+    for (const [taskOrder, task] of taskRows.reverse().entries()) {
+      const events = this.#repo.db
+        .prepare(
+          `SELECT event_type, payload_json, created_at, rowid
+             FROM task_events WHERE task_id = ? ORDER BY rowid ASC`,
+        )
+        .all(task.id) as Array<{
+          event_type: string;
+          payload_json: string;
+          created_at: number;
+          rowid: number;
+        }>;
+      for (const event of events) {
+        const role = CONVERSATION_EVENT_ROLES.get(event.event_type);
+        if (role === undefined) continue;
+        const content = conversationText(JSON.parse(event.payload_json) as unknown);
+        if (content === undefined) continue;
+        turns.push({
+          role,
+          content,
+          at: event.created_at,
+          order: taskOrder * 1_000_000 + event.rowid * 10 + (role === "user" ? 0 : 8),
+        });
+      }
+
+      const checkpoints = this.#repo.db
+        .prepare(
+          `SELECT prompt, answer_json, created_at, answered_at, rowid
+             FROM checkpoints WHERE task_id = ? ORDER BY rowid ASC`,
+        )
+        .all(task.id) as Array<{
+          prompt: string;
+          answer_json: string | null;
+          created_at: number;
+          answered_at: number | null;
+          rowid: number;
+        }>;
+      for (const checkpoint of checkpoints) {
+        const prompt = checkpoint.prompt.trim();
+        if (prompt.length > 0) {
+          turns.push({
+            role: "assistant",
+            content: prompt.slice(0, 4_000),
+            at: checkpoint.created_at,
+            order: taskOrder * 1_000_000 + checkpoint.rowid * 10 + 4,
+          });
+        }
+        if (checkpoint.answer_json !== null && checkpoint.answered_at !== null) {
+          const content = conversationText(JSON.parse(checkpoint.answer_json) as unknown);
+          if (content !== undefined) {
+            turns.push({
+              role: "user",
+              content,
+              at: checkpoint.answered_at,
+              order: taskOrder * 1_000_000 + checkpoint.rowid * 10 + 6,
+            });
+          }
+        }
+      }
+    }
+
+    turns.sort((left, right) => left.at - right.at || left.order - right.order);
+    const deduplicated = turns.filter(
+      (turn, index) =>
+        index === 0 ||
+        turns[index - 1]?.role !== turn.role ||
+        turns[index - 1]?.content !== turn.content,
+    );
+    return deduplicated.slice(-24).map(({ role, content }) => ({ role, content }));
   }
 
   async materializeScheduledRequest(input: {
