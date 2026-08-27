@@ -34,24 +34,19 @@ pnpm local:start
 これはTemporal/PostgreSQL/UIを起動し、ビルド後に`meidoyad`と
 `meidoya-node`を監督します。ターミナル2で同じ環境変数を設定して確認します。
 
-Docker Hubへ接続できない場合は、公式Temporal CLIも利用できます。ターミナル1で
-永続DB付きの開発サーバーを起動し、ターミナル2でMeidoyaだけを起動します。
+Docker Hubへ接続できない場合は、公式Temporal CLIも利用できます。CLIをPATHへ
+インストールし、Meidoyaのローカルランナーを起動します。
 
 ```bash
-# ターミナル1
-temporal server start-dev \
-  --ip 127.0.0.1 \
-  --port 7233 \
-  --ui-port 8080 \
-  --db-filename "$BASE/data/temporal.db"
-
-# ターミナル2
 pnpm build
 node tools/local-run.mjs
 ```
 
 この経路では`pnpm local:start`を使いません。`config.yaml`と`node.yaml`のTemporal
-addressはどちらも`127.0.0.1:7233`にします。
+addressはどちらも`127.0.0.1:7233`にします。ローカルランナーはTemporalの停止を
+検知すると、`$BASE/data/temporal.db`相当の永続DBを使ってTemporal CLIを自動起動し、
+継続監視します。別のサービス管理下に置く場合だけ
+`MEIDOYA_MANAGE_LOCAL_TEMPORAL=0`を設定してください。
 
 ```bash
 pnpm meidoya doctor

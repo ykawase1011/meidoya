@@ -76,8 +76,9 @@ export MEIDOYA_PROFILE=personal
 pnpm local:start
 ```
 
-Dockerを使わずTemporal CLIを別ターミナルの`127.0.0.1:7233`で起動済みなら、
-最後のコマンドは`pnpm build && node tools/local-run.mjs`に置き換えます。詳細は
+Dockerを使わず、PATH上のTemporal CLIを`127.0.0.1:7233`で利用する場合は、
+最後のコマンドを`pnpm build && node tools/local-run.mjs`に置き換えます。
+ローカルランナーがTemporalを自動起動・継続監視します。詳細は
 [`quick-reference-ja.md`](./quick-reference-ja.md)を参照してください。
 
 起動ログへ`slack ingress started`、`discord ingress started`が出ることを確認します。
