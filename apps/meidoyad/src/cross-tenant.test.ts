@@ -196,6 +196,7 @@ describe("task.list and workspace.status.read", () => {
       activeTaskCount: 1,
       waitingTaskCount: 1,
       enabledScheduleCount: 0,
+      conversationHistory: [],
     });
     expect(context.openTasks.map((task) => task.title).sort()).toEqual([
       "Parser implementation",
@@ -206,6 +207,54 @@ describe("task.list and workspace.status.read", () => {
     );
     expect(JSON.stringify(context)).not.toContain("こんにちは");
     expect(JSON.stringify(context)).not.toContain("confidential");
+  });
+
+  it("reconstructs prior turns only from the current Discord or Slack conversation", async () => {
+    const f = two();
+    const conversationId = "conversation-usage";
+    const otherConversationId = "conversation-secret";
+    for (const id of [conversationId, otherConversationId]) {
+      f.db
+        .prepare("INSERT INTO conversations (id, workspace_id, created_at) VALUES (?, ?, ?)")
+        .run(id, WORKSPACE_A, 1_700_000_000_000);
+    }
+    const request = await f.createTask(WORKSPACE_A, {
+      title: "利用量を定期投稿して",
+      conversationId,
+    });
+    await f.repo.appendTaskEvent({
+      taskId: request.taskId,
+      eventType: "TaskFailed",
+      idempotencyKey: "usage-time-question",
+      payload: { summary: "日次の新規投稿は毎日何時（JST）にしますか？" },
+    });
+    const unrelated = await f.createTask(WORKSPACE_A, {
+      title: "別スレッドの秘密",
+      conversationId: otherConversationId,
+    });
+    await f.repo.appendTaskEvent({
+      taskId: unrelated.taskId,
+      eventType: "MaidResponded",
+      idempotencyKey: "unrelated-secret-response",
+      payload: { summary: "別スレッドだけの内容" },
+    });
+    const answer = await f.createTask(WORKSPACE_A, {
+      title: "JST 0:00です",
+      conversationId,
+      parentTaskId: request.taskId,
+    });
+
+    const context = f.service.maidWorkspaceContext({
+      workspaceId: WORKSPACE_A,
+      taskId: answer.taskId,
+    });
+
+    expect(context.conversationHistory).toEqual([
+      { role: "user", content: "利用量を定期投稿して" },
+      { role: "assistant", content: "日次の新規投稿は毎日何時（JST）にしますか？" },
+    ]);
+    expect(JSON.stringify(context)).not.toContain("JST 0:00です");
+    expect(JSON.stringify(context)).not.toContain("別スレッドだけの内容");
   });
 });
 

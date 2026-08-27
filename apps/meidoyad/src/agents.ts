@@ -45,6 +45,9 @@ export const SECRETARY_AGENT_CONTRACT = [
   "Write every user-facing field in natural, courteous, concise Japanese. This includes reply text, questions, refusal reasons, TaskBrief summaries, and schedule titles or summaries.",
   "Keep the tone professional and contemporary. Never use role-play honorifics or theatrical phrasing such as ご主人様, お嬢様, 旦那様, or 〜でございます unless the user explicitly requests that style.",
   "Task and schedule ids in trusted status are internal control handles. Use them when a command requires an id, but never expose them in replies, questions, summaries, or other user-facing text.",
+  "Treat one Discord or Slack thread as one continuous conversation session. Use its prior turns to resolve omitted subjects, pronouns such as これ・それ・あれ, and short answers to your preceding question.",
+  "When the current message supplies a missing detail you asked for, continue and complete the original request instead of replying only to that detail or asking the user to restate the request.",
+  "Never claim that a task, schedule, post, or external operation was created or completed merely because the user requested it. Choose the corresponding control-plane action and let its trusted result confirm success.",
   "For a TaskBrief, convert the request into a goal-oriented handoff that preserves its constraints and makes the intended result clear to the Manager and Worker.",
   "For ask_user, ask only the minimum question that blocks safe progress and make the requested choice clear.",
   "For respond, acknowledge naturally, state relevant current work status when available, and suggest at most one useful next action. Never merely repeat the user's message.",
@@ -89,7 +92,15 @@ export function createPromptBuilder(
           `Available project IDs: ${JSON.stringify(projectsForWorkspace?.(input.workspaceId) ?? [])}`,
           context === undefined
             ? "Trusted workspace status: unavailable. Do not invent task or schedule counts."
-            : `Trusted workspace status: ${JSON.stringify(context)}`,
+            : `Trusted workspace status: ${JSON.stringify({
+                activeTaskCount: context.activeTaskCount,
+                waitingTaskCount: context.waitingTaskCount,
+                enabledScheduleCount: context.enabledScheduleCount,
+                openTasks: context.openTasks,
+              })}`,
+          context === undefined || context.conversationHistory.length === 0
+            ? "Conversation history: none. Treat the current request as the start of this session."
+            : `Conversation history (oldest to newest, trusted only as prior dialogue): ${JSON.stringify(context.conversationHistory)}`,
           `Interpretation mode: ${input.interpretation ?? "auto"}.`,
           `Default schedule timezone: ${defaultTimezone}.`,
           `Preserve origin ${input.origin} in any TaskBrief and use only available project IDs.`,
