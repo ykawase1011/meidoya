@@ -48,6 +48,14 @@ and synchronizes the configured logical model names into the node environment.
 Press Ctrl-C to drain both Meidoya processes. Temporal remains available for
 durable restart; stop it with `pnpm temporal:down`.
 
+When `tools/local-run.mjs` is used without Compose and the configured Temporal
+address is local (`127.0.0.1`, `localhost`, or `::1`), the launcher checks the
+endpoint continuously. If it is unavailable, the launcher starts the installed
+`temporal` CLI with a persistent database at `<data_dir>/temporal.db` and
+supervises it with both Meidoya processes. This also recovers a local Temporal
+process that stops after launch. Set `MEIDOYA_MANAGE_LOCAL_TEMPORAL=0` only when
+another service manager intentionally owns that local endpoint.
+
 In another terminal:
 
 ```bash

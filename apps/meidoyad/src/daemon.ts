@@ -724,7 +724,17 @@ export async function startDaemon(options: DaemonOptions): Promise<StartedDaemon
   status.start();
 
   const sweeper = createCheckpointSweeper({
-    reconcile: () => service.reconcileCheckpointDeliveries(),
+    reconcile: async () => {
+      const checkpoints = await service.reconcileCheckpointDeliveries();
+      const requests = await service.reconcileReceivedRequests();
+      if (requests.submitted > 0 || requests.failed > 0) {
+        process.stderr.write(
+          `meidoyad: received request recovery: ${requests.submitted} submitted,` +
+            ` ${requests.failed} failed of ${requests.scanned}\n`,
+        );
+      }
+      return checkpoints;
+    },
     intervalMs: options.checkpointReconcileIntervalMs ?? 30_000,
   });
   sweeper.start();

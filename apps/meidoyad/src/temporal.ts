@@ -10,6 +10,7 @@ import {
   controlWorkerOptions,
   headMaidWorkflowId,
   maidWorkflowId,
+  requestUpdateId,
   taskWorkflowId,
   type Activities,
   type MeidoyaScheduleDefinition,
@@ -148,6 +149,7 @@ export class TemporalWorkflowGateway implements WorkflowGateway {
     const { workflowId, handle } = await this.#maidHandle(workspaceId);
     await handle.executeUpdate("submitCliRequest", {
       args: [this.#routeEntry(workspaceId, entry)],
+      updateId: requestUpdateId(workspaceId, entry.requestKey),
     });
     return workflowId;
   }

@@ -37,6 +37,7 @@ describe("TemporalWorkflowGateway execution-node routing", () => {
               executionNodeId: "trusted-node",
             },
           ],
+          updateId: "request:workspace:request-1",
         },
       },
     ]);

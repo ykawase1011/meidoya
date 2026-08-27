@@ -122,6 +122,12 @@ export type CheckpointReconcileResult = {
   awaitingCorroboration: number;
 };
 
+export type ReceivedRequestReconcileResult = {
+  scanned: number;
+  submitted: number;
+  failed: number;
+};
+
 type ListedTask = MethodResult<"task.list">["tasks"][number];
 
 const TASK_STATUS_LABELS: Readonly<Record<TaskStatus, string>> = {
@@ -424,6 +430,9 @@ export class ControlPlaneService {
         summary: params.intent.summary,
         projects: params.intent.projects,
         origin: params.intent.origin,
+        ...(params.interpretation === undefined
+          ? {}
+          : { interpretation: params.interpretation }),
       },
     });
 
@@ -863,6 +872,58 @@ export class ControlPlaneService {
       backlog: this.#repo.countUndeliveredCheckpoints(),
       awaitingCorroboration: this.#unreachableOnce.size,
     };
+  }
+
+  async reconcileReceivedRequests(
+    options: { limit?: number; minAgeMs?: number } = {},
+  ): Promise<ReceivedRequestReconcileResult> {
+    const limit = options.limit ?? 100;
+    const minAgeMs = options.minAgeMs ?? 5_000;
+    const cutoff = this.#now() - minAgeMs;
+    const candidates = this.#config.workspaces
+      .flatMap((workspace) =>
+        this.#repo.listTasks(workspace.workspaceId, { status: ["received"], limit }),
+      )
+      .filter(
+        (task) =>
+          task.updatedAt <= cutoff &&
+          task.pipeline !== "cross-workspace" &&
+          (task.origin === "chat" || task.origin === "cli"),
+      )
+      .slice(0, limit);
+    let submitted = 0;
+    let failed = 0;
+    for (const task of candidates) {
+      if (!task.id.startsWith("task-")) continue;
+      const requestKey = task.id.slice("task-".length);
+      const accepted = this.#repo
+        .listTaskEvents(task.id)
+        .find((event) => event.eventType === "RequestAccepted");
+      const interpretation =
+        accepted?.payload !== null &&
+        typeof accepted?.payload === "object" &&
+        "interpretation" in accepted.payload &&
+        (accepted.payload.interpretation === "auto" ||
+          accepted.payload.interpretation === "schedule")
+          ? accepted.payload.interpretation
+          : undefined;
+      try {
+        await this.#gateway.submitRequest(task.workspaceId, {
+          requestKey,
+          origin: task.origin,
+          messageRef: `task_event:request:${requestKey}`,
+          ...(interpretation === undefined ? {} : { interpretation }),
+          ...(task.conversationId === undefined ? {} : { conversationId: task.conversationId }),
+        });
+        submitted += 1;
+      } catch (error) {
+        failed += 1;
+        this.#log(
+          `meidoyad: received request recovery failed for ${task.id} (will retry): ${String(error)}\n`,
+        );
+      }
+    }
+    return { scanned: candidates.length, submitted, failed };
   }
 
   /* --------------------------------------------------------- schedules */

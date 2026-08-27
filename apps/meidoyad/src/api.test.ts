@@ -370,6 +370,73 @@ describe("idempotency keys are per-workspace", () => {
   });
 });
 
+describe("received request recovery", () => {
+  let f: Fixture;
+
+  beforeEach(() => {
+    f = fixture();
+  });
+
+  afterEach(() => {
+    f.db.close();
+  });
+
+  it("re-submits an accepted request that never reached Temporal", async () => {
+    const created = await f.service.createTask(
+      f.scopeOf(VICTIM),
+      createParams({ title: "recover me", idempotencyKey: "recover-me" }),
+    );
+    f.gateway.submitted.length = 0;
+
+    await expect(f.service.reconcileReceivedRequests({ minAgeMs: 0 })).resolves.toEqual({
+      scanned: 1,
+      submitted: 1,
+      failed: 0,
+    });
+    const requestKey = created.task.taskId.slice("task-".length);
+    expect(f.gateway.submitted).toEqual([
+      {
+        workspaceId: VICTIM,
+        entry: {
+          requestKey,
+          origin: "cli",
+          messageRef: `task_event:request:${requestKey}`,
+        },
+      },
+    ]);
+  });
+
+  it("does not race a request that was only just accepted", async () => {
+    await f.service.createTask(
+      f.scopeOf(VICTIM),
+      createParams({ title: "still submitting", idempotencyKey: "still-submitting" }),
+    );
+    f.gateway.submitted.length = 0;
+
+    await expect(f.service.reconcileReceivedRequests()).resolves.toEqual({
+      scanned: 0,
+      submitted: 0,
+      failed: 0,
+    });
+    expect(f.gateway.submitted).toEqual([]);
+  });
+
+  it("preserves the schedule interpretation hint while recovering", async () => {
+    const created = await f.service.createTask(f.scopeOf(VICTIM), {
+      ...createParams({ title: "平日の朝9時にREADMEを確認して" }),
+      interpretation: "schedule",
+    });
+    f.gateway.submitted.length = 0;
+
+    await f.service.reconcileReceivedRequests({ minAgeMs: 0 });
+
+    expect(f.gateway.submitted[0]?.entry).toMatchObject({
+      requestKey: created.task.taskId.slice("task-".length),
+      interpretation: "schedule",
+    });
+  });
+});
+
 describe("Head Maid coordination ingress", () => {
   let f: Fixture;
 
