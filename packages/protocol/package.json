@@ -11,7 +11,7 @@
   },
   "description": "Control Plane API contract: scoped request/response types and the unix-socket control channel envelope.",
   "dependencies": {
-    "zod": "^3.23.8",
+    "zod": "^4.6.6",
     "@meidoya/node-protocol": "workspace:*",
     "@meidoya/domain": "workspace:*"
   }

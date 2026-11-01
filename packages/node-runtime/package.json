@@ -11,7 +11,7 @@
   },
   "description": "meidoya-node side of the Node Protocol: registration, heartbeat, run execution, concurrency.",
   "dependencies": {
-    "zod": "^3.23.8",
+    "zod": "^4.6.6",
     "@meidoya/node-protocol": "workspace:*",
     "@meidoya/domain": "workspace:*",
     "@meidoya/protocol": "workspace:*",

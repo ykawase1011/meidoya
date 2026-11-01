@@ -28,6 +28,6 @@
     "@meidoya/workflows-temporal": "workspace:*",
     "@temporalio/activity": "^1.22.0",
     "@temporalio/worker": "^1.22.0",
-    "zod": "^3.23.8"
+    "zod": "^4.6.6"
   }
 }

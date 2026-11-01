@@ -41,7 +41,7 @@
     "@temporalio/worker": "^1.22.0",
     "better-sqlite3": "^11.3.0",
     "js-yaml": "^4.1.0",
-    "zod": "^3.23.8"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@meidoya/temporal-test-env": "workspace:*",
